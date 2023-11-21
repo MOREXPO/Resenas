@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\ResenaRepository;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ResenaRepository::class)]
+#[ApiResource]
 class Resena
 {
     #[ORM\Id]

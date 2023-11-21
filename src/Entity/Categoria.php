@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\CategoriaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoriaRepository::class)]
+#[ApiResource]
 class Categoria
 {
     #[ORM\Id]

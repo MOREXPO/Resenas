@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\PaginaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PaginaRepository::class)]
+#[ApiResource]
 class Pagina
 {
     #[ORM\Id]

@@ -6,9 +6,11 @@ use App\Repository\PersonaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PersonaRepository::class)]
+#[ApiResource]
 class Persona
 {
     #[ORM\Id]

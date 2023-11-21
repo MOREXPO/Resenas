@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\ValoracionRepository;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ValoracionRepository::class)]
+#[ApiResource]
 class Valoracion
 {
     #[ORM\Id]

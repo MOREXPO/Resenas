@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\InteligenciaArtificialRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InteligenciaArtificialRepository::class)]
+#[ApiResource]
 class InteligenciaArtificial
 {
     #[ORM\Id]

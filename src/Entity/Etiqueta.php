@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\EtiquetaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EtiquetaRepository::class)]
+#[ApiResource]
 class Etiqueta
 {
     #[ORM\Id]
