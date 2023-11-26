@@ -23,9 +23,13 @@ class Categoria
     #[ORM\ManyToMany(targetEntity: Pagina::class, mappedBy: 'categorias')]
     private Collection $paginas;
 
+    #[ORM\ManyToMany(targetEntity: Medio::class, mappedBy: 'categorias')]
+    private Collection $medios;
+
     public function __construct()
     {
         $this->paginas = new ArrayCollection();
+        $this->medios = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -67,6 +71,33 @@ class Categoria
     {
         if ($this->paginas->removeElement($pagina)) {
             $pagina->removeCategoria($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Medio>
+     */
+    public function getMedios(): Collection
+    {
+        return $this->medios;
+    }
+
+    public function addMedio(Medio $medio): self
+    {
+        if (!$this->medios->contains($medio)) {
+            $this->medios->add($medio);
+            $medio->addCategoria($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMedio(Medio $medio): self
+    {
+        if ($this->medios->removeElement($medio)) {
+            $medio->removeCategoria($this);
         }
 
         return $this;

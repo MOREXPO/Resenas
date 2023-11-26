@@ -23,13 +23,13 @@ class Etiqueta
     #[ORM\ManyToMany(targetEntity: Persona::class, mappedBy: 'etiquetas')]
     private Collection $personas;
 
-    #[ORM\ManyToMany(targetEntity: MedioPersona::class, mappedBy: 'etiquetas')]
-    private Collection $medioPersonas;
+    #[ORM\OneToMany(mappedBy: 'etiqueta', targetEntity: Elenco::class)]
+    private Collection $elencos;
 
     public function __construct()
     {
         $this->personas = new ArrayCollection();
-        $this->medioPersonas = new ArrayCollection();
+        $this->elencos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -77,27 +77,30 @@ class Etiqueta
     }
 
     /**
-     * @return Collection<int, MedioPersona>
+     * @return Collection<int, Elenco>
      */
-    public function getMedioPersonas(): Collection
+    public function getElencos(): Collection
     {
-        return $this->medioPersonas;
+        return $this->elencos;
     }
 
-    public function addMedioPersona(MedioPersona $medioPersona): self
+    public function addElenco(Elenco $elenco): self
     {
-        if (!$this->medioPersonas->contains($medioPersona)) {
-            $this->medioPersonas->add($medioPersona);
-            $medioPersona->addEtiqueta($this);
+        if (!$this->elencos->contains($elenco)) {
+            $this->elencos->add($elenco);
+            $elenco->setEtiqueta($this);
         }
 
         return $this;
     }
 
-    public function removeMedioPersona(MedioPersona $medioPersona): self
+    public function removeElenco(Elenco $elenco): self
     {
-        if ($this->medioPersonas->removeElement($medioPersona)) {
-            $medioPersona->removeEtiqueta($this);
+        if ($this->elencos->removeElement($elenco)) {
+            // set the owning side to null (unless already changed)
+            if ($elenco->getEtiqueta() === $this) {
+                $elenco->setEtiqueta(null);
+            }
         }
 
         return $this;

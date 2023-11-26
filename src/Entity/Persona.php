@@ -30,13 +30,16 @@ class Persona
     #[ORM\ManyToMany(targetEntity: Etiqueta::class, inversedBy: 'personas')]
     private Collection $etiquetas;
 
-    #[ORM\ManyToMany(targetEntity: MedioPersona::class, mappedBy: 'persona')]
-    private Collection $medioPersonas;
+    #[ORM\ManyToMany(targetEntity: Elenco::class, mappedBy: 'persona')]
+    private Collection $elencos;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $resumen = null;
 
     public function __construct()
     {
         $this->etiquetas = new ArrayCollection();
-        $this->medioPersonas = new ArrayCollection();
+        $this->elencos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -105,28 +108,40 @@ class Persona
     }
 
     /**
-     * @return Collection<int, MedioPersona>
+     * @return Collection<int, Elenco>
      */
-    public function getMedioPersonas(): Collection
+    public function getElencos(): Collection
     {
-        return $this->medioPersonas;
+        return $this->elencos;
     }
 
-    public function addMedioPersona(MedioPersona $medioPersona): self
+    public function addElenco(Elenco $elenco): self
     {
-        if (!$this->medioPersonas->contains($medioPersona)) {
-            $this->medioPersonas->add($medioPersona);
-            $medioPersona->addPersona($this);
+        if (!$this->elencos->contains($elenco)) {
+            $this->elencos->add($elenco);
+            $elenco->addPersona($this);
         }
 
         return $this;
     }
 
-    public function removeMedioPersona(MedioPersona $medioPersona): self
+    public function removeElenco(Elenco $elenco): self
     {
-        if ($this->medioPersonas->removeElement($medioPersona)) {
-            $medioPersona->removePersona($this);
+        if ($this->elencos->removeElement($elenco)) {
+            $elenco->removePersona($this);
         }
+
+        return $this;
+    }
+
+    public function getResumen(): ?string
+    {
+        return $this->resumen;
+    }
+
+    public function setResumen(?string $resumen): self
+    {
+        $this->resumen = $resumen;
 
         return $this;
     }

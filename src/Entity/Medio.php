@@ -21,14 +21,11 @@ class Medio
     #[ORM\Column(length: 255)]
     private ?string $nombre = null;
 
-    #[ORM\Column]
-    private ?int $anoLanzamiento = null;
-
     #[ORM\OneToMany(mappedBy: 'medio', targetEntity: Resena::class)]
     private Collection $resenas;
 
-    #[ORM\ManyToMany(targetEntity: MedioPersona::class, mappedBy: 'medio')]
-    private Collection $medioPersonas;
+    #[ORM\OneToMany(mappedBy: 'medio', targetEntity: Elenco::class)]
+    private Collection $elencos;
 
     #[ORM\Column]
     private ?int $duracion = null;
@@ -39,10 +36,17 @@ class Medio
     #[ORM\Column]
     private ?bool $pelicula = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $fechaLanzamiento = null;
+
+    #[ORM\ManyToMany(targetEntity: Categoria::class, inversedBy: 'medios')]
+    private Collection $categorias;
+
     public function __construct()
     {
         $this->resenas = new ArrayCollection();
-        $this->medioPersonas = new ArrayCollection();
+        $this->elencos = new ArrayCollection();
+        $this->categorias = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -58,18 +62,6 @@ class Medio
     public function setNombre(string $nombre): self
     {
         $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    public function getAnoLanzamiento(): ?int
-    {
-        return $this->anoLanzamiento;
-    }
-
-    public function setAnoLanzamiento(int $anoLanzamiento): self
-    {
-        $this->anoLanzamiento = $anoLanzamiento;
 
         return $this;
     }
@@ -105,27 +97,30 @@ class Medio
     }
 
     /**
-     * @return Collection<int, MedioPersona>
+     * @return Collection<int, Elenco>
      */
-    public function getMedioPersonas(): Collection
+    public function getElencos(): Collection
     {
-        return $this->medioPersonas;
+        return $this->elencos;
     }
 
-    public function addMedioPersona(MedioPersona $medioPersona): self
+    public function addElenco(Elenco $elenco): self
     {
-        if (!$this->medioPersonas->contains($medioPersona)) {
-            $this->medioPersonas->add($medioPersona);
-            $medioPersona->addMedio($this);
+        if (!$this->elencos->contains($elenco)) {
+            $this->elencos->add($elenco);
+            $elenco->setMedio($this);
         }
 
         return $this;
     }
 
-    public function removeMedioPersona(MedioPersona $medioPersona): self
+    public function removeElenco(Elenco $elenco): self
     {
-        if ($this->medioPersonas->removeElement($medioPersona)) {
-            $medioPersona->removeMedio($this);
+        if ($this->elencos->removeElement($elenco)) {
+            // set the owning side to null (unless already changed)
+            if ($elenco->getMedio() === $this) {
+                $elenco->setMedio(null);
+            }
         }
 
         return $this;
@@ -163,6 +158,42 @@ class Medio
     public function setPelicula(bool $pelicula): self
     {
         $this->pelicula = $pelicula;
+
+        return $this;
+    }
+
+    public function getFechaLanzamiento(): ?\DateTimeInterface
+    {
+        return $this->fechaLanzamiento;
+    }
+
+    public function setFechaLanzamiento(\DateTimeInterface $fechaLanzamiento): self
+    {
+        $this->fechaLanzamiento = $fechaLanzamiento;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Categoria>
+     */
+    public function getCategorias(): Collection
+    {
+        return $this->categorias;
+    }
+
+    public function addCategoria(Categoria $categoria): self
+    {
+        if (!$this->categorias->contains($categoria)) {
+            $this->categorias->add($categoria);
+        }
+
+        return $this;
+    }
+
+    public function removeCategoria(Categoria $categoria): self
+    {
+        $this->categorias->removeElement($categoria);
 
         return $this;
     }

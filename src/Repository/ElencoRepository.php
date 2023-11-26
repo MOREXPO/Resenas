@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\MedioPersona;
+use App\Entity\Elenco;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<MedioPersona>
+ * @extends ServiceEntityRepository<Elenco>
  *
- * @method MedioPersona|null find($id, $lockMode = null, $lockVersion = null)
- * @method MedioPersona|null findOneBy(array $criteria, array $orderBy = null)
- * @method MedioPersona[]    findAll()
- * @method MedioPersona[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Elenco|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Elenco|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Elenco[]    findAll()
+ * @method Elenco[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class MedioPersonaRepository extends ServiceEntityRepository
+class ElencoRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, MedioPersona::class);
+        parent::__construct($registry, Elenco::class);
     }
 
-    public function save(MedioPersona $entity, bool $flush = false): void
+    public function save(Elenco $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class MedioPersonaRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(MedioPersona $entity, bool $flush = false): void
+    public function remove(Elenco $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +40,7 @@ class MedioPersonaRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return MedioPersona[] Returns an array of MedioPersona objects
+//     * @return Elenco[] Returns an array of Elenco objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +54,7 @@ class MedioPersonaRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?MedioPersona
+//    public function findOneBySomeField($value): ?Elenco
 //    {
 //        return $this->createQueryBuilder('m')
 //            ->andWhere('m.exampleField = :val')
