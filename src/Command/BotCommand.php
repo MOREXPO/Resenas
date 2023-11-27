@@ -5,7 +5,7 @@ namespace App\Command;
 use App\Repository\CategoriaRepository;
 use App\Repository\EtiquetaRepository;
 use App\Repository\InteligenciaArtificialRepository;
-use App\Repository\ElencoRepository;
+use App\Repository\MedioPersonaEtiquetaRepository;
 use App\Repository\MedioRepository;
 use App\Repository\PaginaRepository;
 use App\Repository\PersonaRepository;
@@ -34,7 +34,7 @@ class BotCommand extends Command
         private MedioRepository $medioRepository,
         private PersonaRepository $personaRepository,
         private EtiquetaRepository $etiquetaRepository,
-        private ElencoRepository $elencoRepository,
+        private MedioPersonaEtiquetaRepository $medioPersonaEtiquetaRepository,
         private EntityManagerInterface $entityManager,
     ) {
         $this->container = new ContainerBuilder();
@@ -44,7 +44,7 @@ class BotCommand extends Command
             ->addArgument($this->personaRepository)
             ->addArgument($this->etiquetaRepository)
             ->addArgument($this->resenaRepository)
-            ->addArgument($this->elencoRepository)
+            ->addArgument($this->medioPersonaEtiquetaRepository)
             ->addArgument($this->paginaRepository)
             ->addArgument($this->entityManager);
         parent::__construct();

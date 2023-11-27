@@ -23,13 +23,13 @@ class Etiqueta
     #[ORM\ManyToMany(targetEntity: Persona::class, mappedBy: 'etiquetas')]
     private Collection $personas;
 
-    #[ORM\OneToMany(mappedBy: 'etiqueta', targetEntity: Elenco::class)]
-    private Collection $elencos;
+    #[ORM\OneToMany(mappedBy: 'etiqueta', targetEntity: MedioPersonaEtiqueta::class)]
+    private Collection $medio_persona_etiquetas;
 
     public function __construct()
     {
         $this->personas = new ArrayCollection();
-        $this->elencos = new ArrayCollection();
+        $this->medio_persona_etiquetas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -77,29 +77,29 @@ class Etiqueta
     }
 
     /**
-     * @return Collection<int, Elenco>
+     * @return Collection<int, MedioPersonaEtiqueta>
      */
-    public function getElencos(): Collection
+    public function getMedioPersonaEtiquetas(): Collection
     {
-        return $this->elencos;
+        return $this->medio_persona_etiquetas;
     }
 
-    public function addElenco(Elenco $elenco): self
+    public function addMedioPersonaEtiqueta(MedioPersonaEtiqueta $medio_persona_etiqueta): self
     {
-        if (!$this->elencos->contains($elenco)) {
-            $this->elencos->add($elenco);
-            $elenco->setEtiqueta($this);
+        if (!$this->medio_persona_etiquetas->contains($medio_persona_etiqueta)) {
+            $this->medio_persona_etiquetas->add($medio_persona_etiqueta);
+            $medio_persona_etiqueta->setEtiqueta($this);
         }
 
         return $this;
     }
 
-    public function removeElenco(Elenco $elenco): self
+    public function removeMedioPersonaEtiqueta(MedioPersonaEtiqueta $medio_persona_etiqueta): self
     {
-        if ($this->elencos->removeElement($elenco)) {
+        if ($this->medio_persona_etiquetas->removeElement($medio_persona_etiqueta)) {
             // set the owning side to null (unless already changed)
-            if ($elenco->getEtiqueta() === $this) {
-                $elenco->setEtiqueta(null);
+            if ($medio_persona_etiqueta->getEtiqueta() === $this) {
+                $medio_persona_etiqueta->setEtiqueta(null);
             }
         }
 

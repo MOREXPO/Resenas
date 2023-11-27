@@ -2,7 +2,7 @@
 namespace App\Service;
 
 use App\Entity\Categoria;
-use App\Entity\Elenco;
+use App\Entity\MedioPersonaEtiqueta;
 use App\Entity\Etiqueta;
 use App\Entity\Medio;
 use App\Entity\Persona;
@@ -27,7 +27,7 @@ class Sensacine implements PaginaInterface
     private $client;
     private $crawler;
     private $pagina;
-    public function __construct(private $categoriaRepository, private $medioRepository, private $personaRepository, private $etiquetaRepository, private $resenaRepository, private $elencoRepository, private $paginaRepository, private $entityManager)
+    public function __construct(private $categoriaRepository, private $medioRepository, private $personaRepository, private $etiquetaRepository, private $resenaRepository, private $medioPersonaEtiquetaRepository, private $paginaRepository, private $entityManager)
     {
         $this->client = new Client();
         $this->pagina = $this->paginaRepository->findOneBy(["nombre" => "sensacine"]);
@@ -145,14 +145,14 @@ class Sensacine implements PaginaInterface
         return $etiquetas;
     }
 
-    private function crearElenco($etiqueta, $pelicula, $persona)
+    private function crearMedioPersonaEtiqueta($etiqueta, $pelicula, $persona)
     {
-        $elenco = $this->elencoRepository->findOneBy(['etiqueta' => $etiqueta, 'medio' => $pelicula]);
-        if (empty($elenco)) {
-            $elenco = new Elenco();
-            $elenco->setEtiqueta($etiqueta);
-            $elenco->setMedio($pelicula);
+        $medioPersonaEtiqueta = $this->medioPersonaEtiquetaRepository->findOneBy(['etiqueta' => $etiqueta, 'medio' => $pelicula]);
+        if (empty($medioPersonaEtiqueta)) {
+            $medioPersonaEtiqueta = new MedioPersonaEtiqueta();
+            $medioPersonaEtiqueta->setEtiqueta($etiqueta);
+            $medioPersonaEtiqueta->setMedio($pelicula);
         }
-        $elenco->addPersona($persona);
+        $medioPersonaEtiqueta->addPersona($persona);
     }
 }

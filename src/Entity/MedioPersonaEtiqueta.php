@@ -2,40 +2,32 @@
 
 namespace App\Entity;
 
-use App\Repository\ElencoRepository;
+use App\Repository\MedioPersonaEtiquetaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ElencoRepository::class)]
+#[ORM\Entity(repositoryClass: MedioPersonaEtiquetaRepository::class)]
 #[ApiResource]
-class Elenco
+class MedioPersonaEtiqueta
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\ManyToOne(inversedBy: 'elencos')]
+    #[ORM\ManyToOne(inversedBy: 'medio_persona_etiquetas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Medio $medio = null;
-
-    #[ORM\ManyToMany(targetEntity: Persona::class, inversedBy: 'elencos')]
-    private Collection $persona;
-
-    #[ORM\ManyToOne(inversedBy: 'elencos')]
+    #[ORM\Id]
+    #[ORM\ManyToOne(inversedBy: 'medio_persona_etiquetas')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Persona $persona = null;
+    #[ORM\Id]
+    #[ORM\ManyToOne(inversedBy: 'medio_persona_etiquetas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Etiqueta $etiqueta = null;
 
     public function __construct()
     {
         $this->persona = new ArrayCollection();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getMedio(): ?Medio
@@ -50,26 +42,14 @@ class Elenco
         return $this;
     }
 
-    /**
-     * @return Collection<int, Persona>
-     */
-    public function getPersona(): Collection
+    public function getPersona(): ?Persona
     {
         return $this->persona;
     }
 
-    public function addPersona(Persona $persona): self
+    public function setPersona(?Persona $persona): self
     {
-        if (!$this->persona->contains($persona)) {
-            $this->persona->add($persona);
-        }
-
-        return $this;
-    }
-
-    public function removePersona(Persona $persona): self
-    {
-        $this->persona->removeElement($persona);
+        $this->persona = $persona;
 
         return $this;
     }

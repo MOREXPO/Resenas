@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\Elenco;
+use App\Entity\MedioPersonaEtiqueta;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Elenco>
+ * @extends ServiceEntityRepository<MedioPersonaEtiqueta>
  *
- * @method Elenco|null find($id, $lockMode = null, $lockVersion = null)
- * @method Elenco|null findOneBy(array $criteria, array $orderBy = null)
- * @method Elenco[]    findAll()
- * @method Elenco[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method MedioPersonaEtiqueta|null find($id, $lockMode = null, $lockVersion = null)
+ * @method MedioPersonaEtiqueta|null findOneBy(array $criteria, array $orderBy = null)
+ * @method MedioPersonaEtiqueta[]    findAll()
+ * @method MedioPersonaEtiqueta[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ElencoRepository extends ServiceEntityRepository
+class MedioPersonaEtiquetaRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Elenco::class);
+        parent::__construct($registry, MedioPersonaEtiqueta::class);
     }
 
-    public function save(Elenco $entity, bool $flush = false): void
+    public function save(MedioPersonaEtiqueta $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class ElencoRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Elenco $entity, bool $flush = false): void
+    public function remove(MedioPersonaEtiqueta $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +40,7 @@ class ElencoRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return Elenco[] Returns an array of Elenco objects
+//     * @return MedioPersonaEtiqueta[] Returns an array of MedioPersonaEtiqueta objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +54,7 @@ class ElencoRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Elenco
+//    public function findOneBySomeField($value): ?MedioPersonaEtiqueta
 //    {
 //        return $this->createQueryBuilder('m')
 //            ->andWhere('m.exampleField = :val')
