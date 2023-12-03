@@ -25,11 +25,6 @@ class MedioPersonaEtiqueta
     #[ORM\JoinColumn(nullable: false)]
     private ?Etiqueta $etiqueta = null;
 
-    public function __construct()
-    {
-        $this->persona = new ArrayCollection();
-    }
-
     public function getMedio(): ?Medio
     {
         return $this->medio;

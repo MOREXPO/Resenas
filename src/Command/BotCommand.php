@@ -14,6 +14,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -53,6 +54,8 @@ class BotCommand extends Command
     {
         $this
             ->addArgument('pagina', InputArgument::OPTIONAL, 'Pagina a recorrer')
+            ->addOption('numero_pagina_personas', null, InputOption::VALUE_REQUIRED, 'importar personas desde el numero de pagina indicado', 1)
+            ->addOption('numero_pagina_peliculas', null, InputOption::VALUE_REQUIRED, 'importar personas desde el numero de pagina indicado', 1)
         ;
     }
 
@@ -60,13 +63,15 @@ class BotCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $nombrePagina = $input->getArgument('pagina');
+        $numero_pagina_personas = $input->getOption('numero_pagina_personas');
+        $numero_pagina_peliculas = $input->getOption('numero_pagina_peliculas');
 
         if (empty($nombrePagina)) {
             throw new \Exception("Tienes que pasarle como argumento la pagina a recorrer");
         }
 
         $paginaClass = $this->container->get($nombrePagina);
-        $paginaClass->obtenerDatos();
+        $paginaClass->obtenerDatos($numero_pagina_personas,$numero_pagina_peliculas,$io);
         $paginaEntity = $this->paginaRepository->findOneBy(["nombre" => $nombrePagina]);
         $resenas = $this->resenaRepository->findBy(["pagina" => $paginaEntity]);
         $ias = $this->inteligenciaArtificialRepository->findAll();

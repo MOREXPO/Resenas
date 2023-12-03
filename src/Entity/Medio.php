@@ -27,7 +27,7 @@ class Medio
     #[ORM\OneToMany(mappedBy: 'medio', targetEntity: MedioPersonaEtiqueta::class)]
     private Collection $medio_persona_etiquetas;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $duracion = null;
 
     #[ORM\Column(type: Types::TEXT)]
