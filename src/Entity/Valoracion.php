@@ -15,10 +15,10 @@ class Valoracion
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?float $calificacion = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'valoraciones')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Resena $resena = null;
 

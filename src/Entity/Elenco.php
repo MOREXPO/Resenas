@@ -2,37 +2,46 @@
 
 namespace App\Entity;
 
-use App\Repository\MedioPersonaEtiquetaRepository;
+use App\Repository\ElencoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: MedioPersonaEtiquetaRepository::class)]
+#[ORM\Entity(repositoryClass: ElencoRepository::class)]
 #[ApiResource]
-class MedioPersonaEtiqueta
+class Elenco
 {
     #[ORM\Id]
-    #[ORM\ManyToOne(inversedBy: 'medio_persona_etiquetas')]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+    
+    #[ORM\ManyToOne(inversedBy: 'elencos')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Medio $medio = null;
-    #[ORM\Id]
-    #[ORM\ManyToOne(inversedBy: 'medio_persona_etiquetas')]
+    private ?Audiovisual $audiovisual = null;
+    
+    #[ORM\ManyToOne(inversedBy: 'elencos')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Persona $persona = null;
-    #[ORM\Id]
-    #[ORM\ManyToOne(inversedBy: 'medio_persona_etiquetas')]
+    
+    #[ORM\ManyToOne(inversedBy: 'elencos')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Etiqueta $etiqueta = null;
 
-    public function getMedio(): ?Medio
+    public function getId(): ?int
     {
-        return $this->medio;
+        return $this->id;
     }
 
-    public function setMedio(?Medio $medio): self
+    public function getAudiovisual(): ?Audiovisual
     {
-        $this->medio = $medio;
+        return $this->audiovisual;
+    }
+
+    public function setAudiovisual(?Audiovisual $audiovisual): self
+    {
+        $this->audiovisual = $audiovisual;
 
         return $this;
     }

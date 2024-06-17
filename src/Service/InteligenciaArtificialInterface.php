@@ -1,7 +1,8 @@
 <?php
 namespace App\Service;
+use App\Entity\Valoracion;
 
 interface InteligenciaArtificialInterface
 {
-    public function mediaResenas(string $resena):float;
+    public function crearValoracion($resena,$io):Valoracion;
 }

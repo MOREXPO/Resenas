@@ -5,12 +5,9 @@ namespace App\Entity;
 use App\Repository\MedioRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MedioRepository::class)]
-#[ApiResource]
 class Medio
 {
     #[ORM\Id]
@@ -18,35 +15,23 @@ class Medio
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $nombre = null;
+    #[ORM\Column]
+    private ?int $tipo = null;
 
-    #[ORM\OneToMany(mappedBy: 'medio', targetEntity: Resena::class)]
+    #[ORM\OneToMany(mappedBy: 'audiovisual', targetEntity: Resena::class)]
     private Collection $resenas;
 
-    #[ORM\OneToMany(mappedBy: 'medio', targetEntity: MedioPersonaEtiqueta::class)]
-    private Collection $medio_persona_etiquetas;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $duracion = null;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $sinopsis = null;
-
-    #[ORM\Column]
-    private ?bool $pelicula = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $fechaLanzamiento = null;
-
-    #[ORM\ManyToMany(targetEntity: Categoria::class, inversedBy: 'medios')]
+    #[ORM\ManyToMany(targetEntity: Categoria::class, inversedBy: 'audiovisuals')]
     private Collection $categorias;
+
+    #[ORM\OneToMany(mappedBy: 'medio', targetEntity: Audiovisual::class)]
+    private Collection $audiovisuals;
 
     public function __construct()
     {
         $this->resenas = new ArrayCollection();
-        $this->medio_persona_etiquetas = new ArrayCollection();
         $this->categorias = new ArrayCollection();
+        $this->audiovisuals = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -54,14 +39,14 @@ class Medio
         return $this->id;
     }
 
-    public function getNombre(): ?string
+    public function getTipo(): ?int
     {
-        return $this->nombre;
+        return $this->tipo;
     }
 
-    public function setNombre(string $nombre): self
+    public function setTipo(int $tipo): self
     {
-        $this->nombre = $nombre;
+        $this->tipo = $tipo;
 
         return $this;
     }
@@ -78,7 +63,7 @@ class Medio
     {
         if (!$this->resenas->contains($resena)) {
             $this->resenas->add($resena);
-            $resena->setMedio($this);
+            $resena->setAudiovisual($this);
         }
 
         return $this;
@@ -88,88 +73,10 @@ class Medio
     {
         if ($this->resenas->removeElement($resena)) {
             // set the owning side to null (unless already changed)
-            if ($resena->getMedio() === $this) {
-                $resena->setMedio(null);
+            if ($resena->getAudiovisual() === $this) {
+                $resena->setAudiovisual(null);
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, MedioPersonaEtiqueta>
-     */
-    public function getMedioPersonaEtiquetas(): Collection
-    {
-        return $this->medio_persona_etiquetas;
-    }
-
-    public function addMedioPersonaEtiqueta(MedioPersonaEtiqueta $medio_persona_etiqueta): self
-    {
-        if (!$this->medio_persona_etiquetas->contains($medio_persona_etiqueta)) {
-            $this->medio_persona_etiquetas->add($medio_persona_etiqueta);
-            $medio_persona_etiqueta->setMedio($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMedioPersonaEtiqueta(MedioPersonaEtiqueta $medio_persona_etiqueta): self
-    {
-        if ($this->medio_persona_etiquetas->removeElement($medio_persona_etiqueta)) {
-            // set the owning side to null (unless already changed)
-            if ($medio_persona_etiqueta->getMedio() === $this) {
-                $medio_persona_etiqueta->setMedio(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getDuracion(): ?int
-    {
-        return $this->duracion;
-    }
-
-    public function setDuracion(int $duracion): self
-    {
-        $this->duracion = $duracion;
-
-        return $this;
-    }
-
-    public function getSinopsis(): ?string
-    {
-        return $this->sinopsis;
-    }
-
-    public function setSinopsis(string $sinopsis): self
-    {
-        $this->sinopsis = $sinopsis;
-
-        return $this;
-    }
-
-    public function isPelicula(): ?bool
-    {
-        return $this->pelicula;
-    }
-
-    public function setPelicula(bool $pelicula): self
-    {
-        $this->pelicula = $pelicula;
-
-        return $this;
-    }
-
-    public function getFechaLanzamiento(): ?\DateTimeInterface
-    {
-        return $this->fechaLanzamiento;
-    }
-
-    public function setFechaLanzamiento(\DateTimeInterface $fechaLanzamiento): self
-    {
-        $this->fechaLanzamiento = $fechaLanzamiento;
 
         return $this;
     }
@@ -194,6 +101,36 @@ class Medio
     public function removeCategoria(Categoria $categoria): self
     {
         $this->categorias->removeElement($categoria);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Audiovisual>
+     */
+    public function getAudiovisuals(): Collection
+    {
+        return $this->audiovisuals;
+    }
+
+    public function addAudiovisual(Audiovisual $audiovisual): self
+    {
+        if (!$this->audiovisuals->contains($audiovisual)) {
+            $this->audiovisuals->add($audiovisual);
+            $audiovisual->setMedio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAudiovisual(Audiovisual $audiovisual): self
+    {
+        if ($this->audiovisuals->removeElement($audiovisual)) {
+            // set the owning side to null (unless already changed)
+            if ($audiovisual->getMedio() === $this) {
+                $audiovisual->setMedio(null);
+            }
+        }
 
         return $this;
     }

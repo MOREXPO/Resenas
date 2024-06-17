@@ -13,6 +13,7 @@
     "doctrine/orm": "^2.14",
     "fabpot/goutte": "^4.0",
     "nelmio/cors-bundle": "^2.3",
+    "nyholm/psr7": "^1.8",
     "phpdocumentor/reflection-docblock": "^5.3",
     "phpstan/phpdoc-parser": "^1.24",
     "symfony/asset": "6.2.*",
@@ -22,6 +23,7 @@
     "symfony/expression-language": "6.2.*",
     "symfony/flex": "^2",
     "symfony/framework-bundle": "6.2.*",
+    "symfony/process": "6.2.*",
     "symfony/property-access": "6.2.*",
     "symfony/property-info": "6.2.*",
     "symfony/runtime": "6.2.*",
@@ -41,7 +43,8 @@
     "sort-packages": true,
     "allow-plugins": {
       "symfony/flex": true,
-      "symfony/runtime": true
+      "symfony/runtime": true,
+      "php-http/discovery": true
     }
   },
   "autoload": {

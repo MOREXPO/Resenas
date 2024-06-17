@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20231127101649 extends AbstractMigration
+final class Version20240617185216 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,15 +20,15 @@ final class Version20231127101649 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE medio_persona_etiqueta MODIFY id INT NOT NULL');
-        $this->addSql('DROP INDEX `primary` ON medio_persona_etiqueta');
-        $this->addSql('ALTER TABLE medio_persona_etiqueta DROP id');
-        $this->addSql('ALTER TABLE medio_persona_etiqueta ADD PRIMARY KEY (medio_id, persona_id, etiqueta_id)');
+        $this->addSql('ALTER TABLE elenco ADD id INT AUTO_INCREMENT NOT NULL, DROP PRIMARY KEY, ADD PRIMARY KEY (id)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE medio_persona_etiqueta ADD id INT AUTO_INCREMENT NOT NULL, DROP PRIMARY KEY, ADD PRIMARY KEY (id)');
+        $this->addSql('ALTER TABLE elenco MODIFY id INT NOT NULL');
+        $this->addSql('DROP INDEX `PRIMARY` ON elenco');
+        $this->addSql('ALTER TABLE elenco DROP id');
+        $this->addSql('ALTER TABLE elenco ADD PRIMARY KEY (audiovisual_id, persona_id, etiqueta_id)');
     }
 }

@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ResenaRepository;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -28,6 +30,14 @@ class Resena
     #[ORM\ManyToOne(inversedBy: 'resenas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Pagina $pagina = null;
+
+    #[ORM\OneToMany(mappedBy: 'resena', targetEntity: Valoracion::class)]
+    private Collection $valoraciones;
+
+    public function __construct()
+    {
+        $this->valoraciones = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -78,6 +88,36 @@ class Resena
     public function setPagina(?Pagina $pagina): self
     {
         $this->pagina = $pagina;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Valoracion>
+     */
+    public function getValoraciones(): Collection
+    {
+        return $this->valoraciones;
+    }
+
+    public function addValoracione(Valoracion $valoracione): self
+    {
+        if (!$this->valoraciones->contains($valoracione)) {
+            $this->valoraciones->add($valoracione);
+            $valoracione->setResena($this);
+        }
+
+        return $this;
+    }
+
+    public function removeValoracione(Valoracion $valoracione): self
+    {
+        if ($this->valoraciones->removeElement($valoracione)) {
+            // set the owning side to null (unless already changed)
+            if ($valoracione->getResena() === $this) {
+                $valoracione->setResena(null);
+            }
+        }
 
         return $this;
     }

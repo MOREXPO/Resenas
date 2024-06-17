@@ -25,6 +25,11 @@ services:
             - ../:/var/www/symfony:cached
             - symfony_app_var:/var/www/symfony/var
             - symfony_app_vendor:/var/www/symfony/vendor
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         networks:
             - symfony_app
     nginx:
@@ -40,6 +45,17 @@ services:
             - symfony_app
         env_file:
             - .env.nginx.local
+    node:
+        build:
+            context: .
+            dockerfile: ./node/Dockerfile
+        restart: unless-stopped
+        ports:
+            - "5173:5173"
+        volumes:
+            - ../assets/:/srv/app
+        stdin_open: true
+        tty: true
 
 volumes:
     symfony_app_var:

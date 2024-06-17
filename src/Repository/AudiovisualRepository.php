@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\MedioPersonaEtiqueta;
+use App\Entity\Audiovisual;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<MedioPersonaEtiqueta>
+ * @extends ServiceEntityRepository<Audiovisual>
  *
- * @method MedioPersonaEtiqueta|null find($id, $lockMode = null, $lockVersion = null)
- * @method MedioPersonaEtiqueta|null findOneBy(array $criteria, array $orderBy = null)
- * @method MedioPersonaEtiqueta[]    findAll()
- * @method MedioPersonaEtiqueta[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Audiovisual|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Audiovisual|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Audiovisual[]    findAll()
+ * @method Audiovisual[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class MedioPersonaEtiquetaRepository extends ServiceEntityRepository
+class AudiovisualRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, MedioPersonaEtiqueta::class);
+        parent::__construct($registry, Audiovisual::class);
     }
 
-    public function save(MedioPersonaEtiqueta $entity, bool $flush = false): void
+    public function save(Audiovisual $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class MedioPersonaEtiquetaRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(MedioPersonaEtiqueta $entity, bool $flush = false): void
+    public function remove(Audiovisual $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +40,7 @@ class MedioPersonaEtiquetaRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return MedioPersonaEtiqueta[] Returns an array of MedioPersonaEtiqueta objects
+//     * @return Audiovisual[] Returns an array of Audiovisual objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +54,7 @@ class MedioPersonaEtiquetaRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?MedioPersonaEtiqueta
+//    public function findOneBySomeField($value): ?Audiovisual
 //    {
 //        return $this->createQueryBuilder('m')
 //            ->andWhere('m.exampleField = :val')

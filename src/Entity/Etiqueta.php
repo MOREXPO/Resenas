@@ -23,13 +23,13 @@ class Etiqueta
     #[ORM\ManyToMany(targetEntity: Persona::class, mappedBy: 'etiquetas')]
     private Collection $personas;
 
-    #[ORM\OneToMany(mappedBy: 'etiqueta', targetEntity: MedioPersonaEtiqueta::class)]
-    private Collection $medio_persona_etiquetas;
+    #[ORM\OneToMany(mappedBy: 'etiqueta', targetEntity: Elenco::class)]
+    private Collection $elencos;
 
     public function __construct()
     {
         $this->personas = new ArrayCollection();
-        $this->medio_persona_etiquetas = new ArrayCollection();
+        $this->elencos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -77,29 +77,29 @@ class Etiqueta
     }
 
     /**
-     * @return Collection<int, MedioPersonaEtiqueta>
+     * @return Collection<int, Elenco>
      */
-    public function getMedioPersonaEtiquetas(): Collection
+    public function getElencos(): Collection
     {
-        return $this->medio_persona_etiquetas;
+        return $this->elencos;
     }
 
-    public function addMedioPersonaEtiqueta(MedioPersonaEtiqueta $medio_persona_etiqueta): self
+    public function addElenco(Elenco $elenco): self
     {
-        if (!$this->medio_persona_etiquetas->contains($medio_persona_etiqueta)) {
-            $this->medio_persona_etiquetas->add($medio_persona_etiqueta);
-            $medio_persona_etiqueta->setEtiqueta($this);
+        if (!$this->elencos->contains($elenco)) {
+            $this->elencos->add($elenco);
+            $elenco->setEtiqueta($this);
         }
 
         return $this;
     }
 
-    public function removeMedioPersonaEtiqueta(MedioPersonaEtiqueta $medio_persona_etiqueta): self
+    public function removeElenco(Elenco $elenco): self
     {
-        if ($this->medio_persona_etiquetas->removeElement($medio_persona_etiqueta)) {
+        if ($this->elencos->removeElement($elenco)) {
             // set the owning side to null (unless already changed)
-            if ($medio_persona_etiqueta->getEtiqueta() === $this) {
-                $medio_persona_etiqueta->setEtiqueta(null);
+            if ($elenco->getEtiqueta() === $this) {
+                $elenco->setEtiqueta(null);
             }
         }
 
