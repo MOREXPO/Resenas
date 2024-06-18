@@ -1,33 +1,33 @@
 import { defineStore } from 'pinia'
 import axios from 'axios';
 
-export const audiovisualStore = defineStore({
-  id: "audiovisual",
+export const personaStore = defineStore({
+  id: "persona",
   state: () => ({
-    audiovisuals: [],
+    personas: [],
   }),
   getters: {
-    getAudiovisuals: (state) => {
-      return state.audiovisuals
+    getPersonas: (state) => {
+      return state.personas
     }
   },
   actions: {
-    async getApiAudiovisuals() {
-      axios.get('http://localhost/api/audiovisuals', {
+    async getApiPersonas() {
+      axios.get('http://localhost/api/personas', {
         headers: {
           'accept': 'application/ld+json'
         }
       })
         .then(response => {
-          this.audiovisuals = response.data['hydra:member'];
-          console.log(this.audiovisuals);
+          this.personas = response.data['hydra:member'];
+          console.log(this.personas);
         })
         .catch(error => {
           console.error('Error:', error);
         });
     },
     updateGroup(entity) {
-      let newList = [...this.audiovisuals.filter(x => x.id != entity.id)];
+      let newList = [...this.personas.filter(x => x.id != entity.id)];
       newList.push(entity);
       newList.sort((a, b) => { return a.id - b.id; })
       return newList;

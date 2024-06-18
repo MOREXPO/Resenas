@@ -1,74 +1,82 @@
 <template>
- <div id="nav-bar">
-  <input id="nav-toggle" type="checkbox"/>
-  <div id="nav-header"><a id="nav-title" href="https://codepen.io" target="_blank">C<i class="mdi mdi-codepen"></i>DEPEN</a>
-    <label for="nav-toggle"><span id="nav-toggle-burger"></span></label>
-    <hr/>
-  </div>
-  <div id="nav-content">
-    <div class="nav-button"><i class="mdi mdi-palette"></i><span>Your Work</span></div>
-    <div class="nav-button"><i class="mdi mdi-images"></i><span>Assets</span></div>
-    <div class="nav-button"><i class="mdi mdi-thumbtack"></i><span>Pinned Items</span></div>
-    <hr/>
-    <div class="nav-button"><i class="mdi mdi-heart"></i><span>Following</span></div>
-    <div class="nav-button"><i class="mdi mdi-chart-line"></i><span>Trending</span></div>
-    <div class="nav-button"><i class="mdi mdi-fire"></i><span>Challenges</span></div>
-    <div class="nav-button"><i class="mdi mdi-magic"></i><span>Spark</span></div>
-    <hr/>
-    <div class="nav-button"><i class="mdi mdi-gem"></i><span>Codepen Pro</span></div>
-    <div id="nav-content-highlight"></div>
-  </div>
-  <input id="nav-footer-toggle" type="checkbox"/>
-  <div id="nav-footer">
-    <div id="nav-footer-heading">
-      <div id="nav-footer-avatar"><img src="https://gravatar.com/avatar/4474ca42d303761c2901fa819c4f2547"/></div>
-      <div id="nav-footer-titlebox">uahnbu<span id="nav-footer-subtitle">Admin</span></div>
-      <label for="nav-footer-toggle"><i class="mdi mdi-menu-up"></i></label>
+  <div id="nav-bar">
+    <input id="nav-toggle" type="checkbox" />
+    <div id="nav-header">
+      <div id="nav-title">R<i class="mdi mdi-star"></i>SEÑAS</div>
+      <label for="nav-toggle"><span id="nav-toggle-burger"></span></label>
+      <hr />
     </div>
-    <div id="nav-footer-content">
-      <Lorem>ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</Lorem>
+    <div id="nav-content">
+      <router-link to="/peliculas" class="nav-button">
+        <i class="mdi mdi-film"></i><span>Peliculas</span>
+      </router-link>
+      <router-link to="/artistas" class="nav-button">
+        <i class="mdi mdi-account-star"></i><span>Artistas</span>
+      </router-link>
+      <div id="nav-content-highlight"></div>
+    </div>
+    <input id="nav-footer-toggle" type="checkbox" />
+    <div id="nav-footer">
+      <div id="nav-footer-heading">
+        <div id="nav-footer-avatar"><img src="https://gravatar.com/avatar/4474ca42d303761c2901fa819c4f2547" /></div>
+        <div id="nav-footer-titlebox">usuario<span id="nav-footer-subtitle">Admin</span></div>
+        <label for="nav-footer-toggle"><i class="mdi mdi-menu-up"></i></label>
+      </div>
+      <div id="nav-footer-content">
+        <Lorem>Cerrar sesión</Lorem>
+      </div>
     </div>
   </div>
-</div>
 </template>
 <style scoped>
-
-#nav-toggle:checked ~ #nav-header {
+#nav-toggle:checked~#nav-header {
   width: calc(var(--navbar-width-min) - 16px);
 }
-#nav-toggle:checked ~ #nav-content, #nav-toggle:checked ~ #nav-footer {
+
+#nav-toggle:checked~#nav-content,
+#nav-toggle:checked~#nav-footer {
   width: var(--navbar-width-min);
 }
-#nav-toggle:checked ~ #nav-header #nav-title {
+
+#nav-toggle:checked~#nav-header #nav-title {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.1s;
 }
-#nav-toggle:checked ~ #nav-header label[for=nav-toggle] {
+
+#nav-toggle:checked~#nav-header label[for=nav-toggle] {
   left: calc(50% - 8px);
   transform: translate(-50%);
 }
-#nav-toggle:checked ~ #nav-header #nav-toggle-burger {
+
+#nav-toggle:checked~#nav-header #nav-toggle-burger {
   background: var(--navbar-light-primary);
 }
-#nav-toggle:checked ~ #nav-header #nav-toggle-burger:before, #nav-toggle:checked ~ #nav-header #nav-toggle-burger::after {
+
+#nav-toggle:checked~#nav-header #nav-toggle-burger:before,
+#nav-toggle:checked~#nav-header #nav-toggle-burger::after {
   width: 16px;
   background: var(--navbar-light-secondary);
   transform: translate(0, 0) rotate(0deg);
 }
-#nav-toggle:checked ~ #nav-content .nav-button span {
+
+#nav-toggle:checked~#nav-content .nav-button span {
   opacity: 0;
   transition: opacity 0.1s;
 }
-#nav-toggle:checked ~ #nav-content .nav-button .mdi {
+
+#nav-toggle:checked~#nav-content .nav-button .mdi {
   min-width: calc(100% - 16px);
 }
-#nav-toggle:checked ~ #nav-footer #nav-footer-avatar {
+
+#nav-toggle:checked~#nav-footer #nav-footer-avatar {
   margin-left: 0;
   left: 50%;
   transform: translate(-50%);
 }
-#nav-toggle:checked ~ #nav-footer #nav-footer-titlebox, #nav-toggle:checked ~ #nav-footer label[for=nav-footer-toggle] {
+
+#nav-toggle:checked~#nav-footer #nav-footer-titlebox,
+#nav-toggle:checked~#nav-footer label[for=nav-footer-toggle] {
   opacity: 0;
   transition: opacity 0.1s;
   pointer-events: none;
@@ -87,6 +95,7 @@
   overflow: hidden;
   user-select: none;
 }
+
 #nav-bar hr {
   margin: 0;
   position: relative;
@@ -95,10 +104,12 @@
   border: none;
   border-top: solid 1px var(--navbar-dark-secondary);
 }
+
 #nav-bar a {
   color: inherit;
   text-decoration: inherit;
 }
+
 #nav-bar input[type=checkbox] {
   display: none;
 }
@@ -116,6 +127,7 @@
   align-items: center;
   transition: width 0.2s;
 }
+
 #nav-header hr {
   position: absolute;
   bottom: 0;
@@ -145,7 +157,9 @@ label[for=nav-toggle] {
   border-radius: 99px;
   transition: background 0.2s;
 }
-#nav-toggle-burger:before, #nav-toggle-burger:after {
+
+#nav-toggle-burger:before,
+#nav-toggle-burger:after {
   content: "";
   position: absolute;
   top: -6px;
@@ -156,6 +170,7 @@ label[for=nav-toggle] {
   transform: translate(2px, 8px) rotate(30deg);
   transition: 0.2s;
 }
+
 #nav-toggle-burger:after {
   top: 6px;
   transform: translate(2px, -8px) rotate(-30deg);
@@ -173,14 +188,17 @@ label[for=nav-toggle] {
   overflow-x: hidden;
   transition: width 0.2s;
 }
+
 #nav-content::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
+
 #nav-content::-webkit-scrollbar-thumb {
   border-radius: 99px;
   background-color: #D62929;
 }
+
 #nav-content::-webkit-scrollbar-button {
   height: 16px;
 }
@@ -196,7 +214,9 @@ label[for=nav-toggle] {
   border-radius: 16px 0 0 16px;
   transition: top 0.2s;
 }
-#nav-content-highlight:before, #nav-content-highlight:after {
+
+#nav-content-highlight:before,
+#nav-content-highlight:after {
   content: "";
   position: absolute;
   right: 0;
@@ -206,6 +226,7 @@ label[for=nav-toggle] {
   border-radius: 50%;
   box-shadow: 16px 16px var(--background);
 }
+
 #nav-content-highlight:after {
   top: 100%;
   box-shadow: 16px -16px var(--background);
@@ -214,6 +235,7 @@ label[for=nav-toggle] {
 .nav-button {
   position: relative;
   margin-left: 16px;
+  background-color: transparent; /* Fondo inicial transparente */
   height: 54px;
   display: flex;
   align-items: center;
@@ -223,58 +245,76 @@ label[for=nav-toggle] {
   z-index: 1;
   transition: color 0.2s;
 }
+
 .nav-button span {
   transition: opacity 1s;
 }
+
 .nav-button .mdi {
   transition: min-width 0.2s;
 }
+
 .nav-button:nth-of-type(1):hover {
   color: var(--navbar-dark-primary);
 }
-.nav-button:nth-of-type(1):hover ~ #nav-content-highlight {
+
+.nav-button:nth-of-type(1):hover~#nav-content-highlight {
   top: 16px;
 }
+
 .nav-button:nth-of-type(2):hover {
   color: var(--navbar-dark-primary);
 }
-.nav-button:nth-of-type(2):hover ~ #nav-content-highlight {
+
+.nav-button:nth-of-type(2):hover~#nav-content-highlight {
   top: 70px;
 }
+
 .nav-button:nth-of-type(3):hover {
   color: var(--navbar-dark-primary);
 }
-.nav-button:nth-of-type(3):hover ~ #nav-content-highlight {
+
+.nav-button:nth-of-type(3):hover~#nav-content-highlight {
   top: 124px;
 }
+
 .nav-button:nth-of-type(4):hover {
   color: var(--navbar-dark-primary);
 }
-.nav-button:nth-of-type(4):hover ~ #nav-content-highlight {
+
+.nav-button:nth-of-type(4):hover~#nav-content-highlight {
   top: 178px;
 }
+
 .nav-button:nth-of-type(5):hover {
   color: var(--navbar-dark-primary);
 }
-.nav-button:nth-of-type(5):hover ~ #nav-content-highlight {
+
+.nav-button:nth-of-type(5):hover~#nav-content-highlight {
   top: 232px;
 }
+
 .nav-button:nth-of-type(6):hover {
   color: var(--navbar-dark-primary);
 }
-.nav-button:nth-of-type(6):hover ~ #nav-content-highlight {
+
+.nav-button:nth-of-type(6):hover~#nav-content-highlight {
   top: 286px;
 }
+
 .nav-button:nth-of-type(7):hover {
   color: var(--navbar-dark-primary);
 }
-.nav-button:nth-of-type(7):hover ~ #nav-content-highlight {
+
+.nav-button:nth-of-type(7):hover~#nav-content-highlight {
   top: 340px;
 }
+
 .nav-button:nth-of-type(8):hover {
   color: var(--navbar-dark-primary);
 }
-.nav-button:nth-of-type(8):hover ~ #nav-content-highlight {
+
+.nav-button:nth-of-type(8):hover~#nav-content-highlight {
   top: 394px;
 }
 
@@ -314,6 +354,7 @@ label[for=nav-toggle] {
   transform: translate(0);
   transition: 0.2s;
 }
+
 #nav-footer-avatar img {
   height: 100%;
 }
@@ -332,11 +373,12 @@ label[for=nav-toggle] {
   font-size: 0.6rem;
 }
 
-#nav-toggle:not(:checked) ~ #nav-footer-toggle:checked + #nav-footer {
+#nav-toggle:not(:checked)~#nav-footer-toggle:checked+#nav-footer {
   height: 30%;
   min-height: 54px;
 }
-#nav-toggle:not(:checked) ~ #nav-footer-toggle:checked + #nav-footer label[for=nav-footer-toggle] {
+
+#nav-toggle:not(:checked)~#nav-footer-toggle:checked+#nav-footer label[for=nav-footer-toggle] {
   transform: rotate(180deg);
 }
 
@@ -359,10 +401,12 @@ label[for=nav-footer-toggle] {
   font-size: 0.8rem;
   overflow: auto;
 }
+
 #nav-footer-content::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
+
 #nav-footer-content::-webkit-scrollbar-thumb {
   border-radius: 99px;
   background-color: #D62929;
