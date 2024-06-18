@@ -73,7 +73,7 @@ class Sensacine implements PaginaInterface
             for ($i = $numero_pagina_peliculas; $i <= $limite_pagina; $i++) {
                 $this->crawler = $this->client->request('GET', $this->pagina->getDominio() . '/peliculas/todas-peliculas/?page=' . $i);
                 $io->writeln("Numero de pagina para Peliculas: $i");
-                $this->crawler->filter('#content-layout > section.section.section-wrap.gd-3-cols.gd-gap-20.row-col-sticky > div.gd-col-middle > ul > li > div > div.meta > h2 > a')->each(function ($node) {
+                $this->crawler->filter('#content-layout > section.section.section-wrap.gd-3-cols.gd-gap-20.row-col-sticky > div.gd-col-middle > ul > li > div > div.meta > h2 > a')->each(function ($node) use($io) {
                     $link = $node->link();
                     $this->crawler = $this->client->click($link);
 
@@ -84,6 +84,7 @@ class Sensacine implements PaginaInterface
                     } else {
                         $titulo = trim(preg_replace('/\b' . preg_quote('Título original', '/') . '\b/', '', $titulo->text()));
                     }
+                    $io->writeln("Pelicula: $titulo");
                     $pelicula = $this->audiovisualRepository->findOneBy(['nombre' => $titulo]);
                     if (empty($pelicula)) {
                         $pelicula = new Audiovisual();

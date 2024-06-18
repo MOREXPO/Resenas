@@ -6,8 +6,10 @@ use App\Repository\MedioRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: MedioRepository::class)]
+#[ApiResource]
 class Medio
 {
     #[ORM\Id]
@@ -18,10 +20,10 @@ class Medio
     #[ORM\Column]
     private ?int $tipo = null;
 
-    #[ORM\OneToMany(mappedBy: 'audiovisual', targetEntity: Resena::class)]
+    #[ORM\OneToMany(mappedBy: 'medio', targetEntity: Resena::class)]
     private Collection $resenas;
 
-    #[ORM\ManyToMany(targetEntity: Categoria::class, inversedBy: 'audiovisuals')]
+    #[ORM\ManyToMany(targetEntity: Categoria::class, inversedBy: 'medios')]
     private Collection $categorias;
 
     #[ORM\OneToMany(mappedBy: 'medio', targetEntity: Audiovisual::class)]

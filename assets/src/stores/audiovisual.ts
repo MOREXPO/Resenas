@@ -22,14 +22,19 @@ export const audiovisualStore = defineStore({
   actions: {
     async getApiAudiovisuals() {
       this.loading = true;
-      try {
-        const response = await axios.get('http://localhost/api/audiovisuals');
-        this.loading = false;
-        console.log(response);
-      } catch (error) {
-        console.error(error);
-        this.loading = false;
-      }
+      axios.get('http://localhost/api/audiovisuals', {
+        headers: {
+          'accept': 'application/ld+json'
+        }
+      })
+        .then(response => {
+          console.log(response.data);
+          this.loading = false;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          this.loading = false;
+        });
     },
     setLoading(valor) {
       this.loading = valor
