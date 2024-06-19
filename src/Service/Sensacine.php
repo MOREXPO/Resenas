@@ -73,7 +73,7 @@ class Sensacine implements PaginaInterface
             for ($i = $numero_pagina_peliculas; $i <= $limite_pagina; $i++) {
                 $this->crawler = $this->client->request('GET', $this->pagina->getDominio() . '/peliculas/todas-peliculas/?page=' . $i);
                 $io->writeln("Numero de pagina para Peliculas: $i");
-                $this->crawler->filter('#content-layout > section.section.section-wrap.gd-3-cols.gd-gap-20.row-col-sticky > div.gd-col-middle > ul > li > div > div.meta > h2 > a')->each(function ($node) use($io) {
+                $this->crawler->filter('#content-layout > section.section.section-wrap.gd-3-cols.gd-gap-20.row-col-sticky > div.gd-col-middle > ul > li > div > div.meta > h2 > a')->each(function ($node) use ($io) {
                     $link = $node->link();
                     $this->crawler = $this->client->click($link);
 
@@ -92,6 +92,11 @@ class Sensacine implements PaginaInterface
                         $medio->setTipo(1);
                         $pelicula->setNombre($titulo);
                         $pelicula->setMedio($medio);
+                    }
+                    $imagen = $this->crawler->filter('.thumbnail-img');
+                    if ($imagen->count() > 0) {
+                        $src = $imagen->attr('src');
+                        $pelicula->setImagen($src);
                     }
                     $infoHeader = $this->crawler->filter('#content-layout > section > div > div.card.entity-card > div.meta > div > div.meta-body-item.meta-body-info');
                     $arrayHeader = explode('|', $infoHeader->text());
@@ -241,6 +246,11 @@ class Sensacine implements PaginaInterface
             $persona = new Persona();
             $persona->setNombre($nombre->text());
         }
+        $imagen = $this->crawler->filter('.thumbnail-img');
+        if ($imagen->count() > 0) {
+            $src = $imagen->attr('src');
+            $persona->setImagen($src);
+        }
         $this->crawler->filter('#content-layout > div.section > div > section:nth-child(1) > div > div > div')->children()->each(function ($node) use ($persona) {
             if (trim($node->filter('span')->text()) == "Actividad" || trim($node->filter('span')->text()) == "Actividades") {
                 if (trim($node->filter('span')->text()) == "Actividad") {
@@ -274,7 +284,8 @@ class Sensacine implements PaginaInterface
                     $fechaNacimiento = str_replace(array_keys($this->meses), array_values($this->meses), $fechaNacimiento);
                     $fechaNacimiento = \DateTime::createFromFormat('j \d\e F \d\e Y', $fechaNacimiento);
                 }
-                if(gettype($fechaNacimiento)!=="boolean")$persona->setFechaNacimiento($fechaNacimiento);
+                if (gettype($fechaNacimiento) !== "boolean")
+                    $persona->setFechaNacimiento($fechaNacimiento);
             }
         });
         return $persona;

@@ -21,6 +21,9 @@ class Persona
     #[ORM\Column(length: 255)]
     private ?string $nombre = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $imagen = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nacionalidad = null;
 
@@ -55,6 +58,18 @@ class Persona
     public function setNombre(string $nombre): self
     {
         $this->nombre = $nombre;
+
+        return $this;
+    }
+
+    public function getImagen(): ?string
+    {
+        return $this->imagen;
+    }
+
+    public function setImagen(string $imagen): self
+    {
+        $this->imagen = $imagen;
 
         return $this;
     }
