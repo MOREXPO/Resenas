@@ -5,18 +5,13 @@
                 <h1>Películas</h1>
             </v-col>
         </v-row>
-        <v-row v-if="audiovisuals.length" id="content">
-            <v-col v-for="audiovisual in audiovisuals" :key="audiovisual.id" cols="12" sm="6" md="4">
-                <v-card class="mx-auto my-8" elevation="16" max-width="344">
-                    <v-card-item>
-                        <v-card-title>{{ audiovisual.nombre }}</v-card-title>
-                        <v-card-subtitle>{{ formatDate(audiovisual.fechaLanzamiento) }}</v-card-subtitle>
-                    </v-card-item>
-                    <v-card-text class="bg-surface-light pt-4">
-                        <div><strong>Duración:</strong> {{ audiovisual.duracion }} minutos</div>
-                        <div><strong>Sinopsis:</strong> {{ truncate(audiovisual.sinopsis) }}</div>
-                    </v-card-text>
-                </v-card>
+        <v-row v-if="!audiovisualLoading" id="content">
+            <v-col v-for="pelicula in peliculas" :key="pelicula.id" cols="12" sm="6" md="4">
+                <PeliculaCard :pelicula="pelicula"></PeliculaCard>
+            </v-col>
+            <v-col :cols="12" class="text-center paginacion">
+                <v-pagination v-model="page" class="my-4" :total-visible="7" :length="lastPage"
+                    color="primary"></v-pagination>
             </v-col>
         </v-row>
         <v-row v-else>
@@ -27,32 +22,49 @@
         </v-row>
     </v-container>
 </template>
+
 <script>
 import { mapState, mapActions } from 'pinia';
 import { audiovisualStore } from '../stores/audiovisual';
+import { categoriaStore } from '../stores/categoria';
+import PeliculaCard from '../components/PeliculaCard.vue';
 export default {
-    name: "HomeView",
+    name: "Peliculas",
+    data() {
+        return {
+            page: 1,
+        }
+    },
+    components:{
+        PeliculaCard
+    },
     computed: {
         ...mapState(audiovisualStore, {
             audiovisuals: store => store.audiovisuals,
+            lastPage: store => store.lastPage,
+            audiovisualLoading: store => store.loading,
         }),
+        peliculas() {
+            return this.audiovisuals[this.page];
+        }
     },
     methods: {
         ...mapActions(audiovisualStore, ["getApiAudiovisuals"]),
-        formatDate(dateString) {
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString(undefined, options);
-        },
-        truncate(text, length = 100) {
-            return text.length > length ? text.substring(0, length) + '...' : text;
+        ...mapActions(categoriaStore, ["getApiCategorias"]),
+    },
+    created() {
+        this.getApiAudiovisuals(this.page);
+        this.getApiCategorias();
+    },
+    watch: {
+        page(newValue, oldValue) {
+            this.page = newValue;
+            this.getApiAudiovisuals(newValue);
         }
-    },
-    mounted() {
-        this.getApiAudiovisuals();
-    },
-
+    }
 }
 </script>
+
 <style scoped>
 #content {
     position: relative;
@@ -79,12 +91,14 @@ export default {
     height: 16px;
 }
 
-.v-card {
+.paginacion {
     direction: ltr;
-    transition: transform 0.3s;
 }
 
-.v-card:hover {
-    transform: scale(1.05);
+@media screen and (max-width: 600px) {
+    .card {
+        width: 100%;
+        height: auto;
+    }
 }
 </style>

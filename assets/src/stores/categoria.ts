@@ -4,14 +4,10 @@ import axios from 'axios';
 export const categoriaStore = defineStore({
   id: "categoria",
   state: () => ({
-    loaded: false,
-    loading: false,
+    loading: true,
     categorias: [],
   }),
   getters: {
-    getLoaded: (state) => {
-      return state.loaded
-    },
     getLoading: (state) => {
       return state.loading
     },
@@ -21,24 +17,18 @@ export const categoriaStore = defineStore({
   },
   actions: {
     async getApiCategorias() {
-      this.loading = true;
+
       try {
         const response = await axios.get('http://localhost/api/categorias');
-        this.loading = false;
-        console.log(response);
+        this.categorias = response.data['hydra:member'];
+        console.log(this.categorias);
       } catch (error) {
         console.error(error);
-        this.loading = false;
       }
+
     },
     setLoading(valor) {
       this.loading = valor
     },
-    updateGroup(entity) {
-      let newList = [...this.categorias.filter(x => x.id != entity.id)];
-      newList.push(entity);
-      newList.sort((a, b) => { return a.id - b.id; })
-      return newList;
-    }
   }
 })

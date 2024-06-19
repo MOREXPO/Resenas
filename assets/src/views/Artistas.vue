@@ -5,17 +5,12 @@
         <h1>Artistas</h1>
       </v-col>
     </v-row>
-    <v-row v-if="personas.length" id="content">
-      <v-col v-for="persona in personas" :key="persona.id" cols="12" sm="6" md="4">
-        <v-card class="mx-auto my-8" elevation="16" max-width="344">
-          <v-card-item>
-            <v-card-title>{{ persona.nombre }}</v-card-title>
-            <v-card-subtitle>{{ formatDate(persona.fechaNacimiento) }}</v-card-subtitle>
-          </v-card-item>
-          <v-card-text class="bg-surface-light pt-4">
-            <div><strong>Nacionalidad:</strong> {{ persona.nacionalidad }} minutos</div>
-          </v-card-text>
-        </v-card>
+    <v-row v-if="!personasLoading" id="content">
+      <v-col v-for="artista in artistas" :key="artista.id" cols="12" sm="6" md="4">
+        <ArtistaCard :artista="artista"></ArtistaCard>
+      </v-col>
+      <v-col :cols="12" class="text-center paginacion">
+        <v-pagination v-model="page" class="my-4" :total-visible="7" :length="lastPage" color="primary"></v-pagination>
       </v-col>
     </v-row>
     <v-row v-else>
@@ -29,27 +24,49 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 import { personaStore } from '../stores/persona';
+import { etiquetaStore } from '../stores/etiqueta';
+import ArtistaCard from '../components/ArtistaCard.vue';
 export default {
-  name: "HomeView",
+  name: "Artistas",
+  data() {
+    return {
+      page: 1,
+    }
+  },
+  components: {
+    ArtistaCard
+  },
   computed: {
     ...mapState(personaStore, {
       personas: store => store.personas,
+      lastPage: store => store.lastPage,
+      personasLoading: store => store.loading,
     }),
+    artistas() {
+      return this.personas[this.page];
+    },
   },
   methods: {
     ...mapActions(personaStore, ["getApiPersonas"]),
-    formatDate(dateString) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-    },
-    truncate(text, length = 100) {
-      return text.length > length ? text.substring(0, length) + '...' : text;
+    ...mapActions(etiquetaStore, ["getApiEtiquetas", "setLoading"]),
+  },
+  created() {
+    this.getApiPersonas(this.page).then(() => {
+      this.personas.forEach((page) => {
+        page.forEach(persona => {
+          persona.etiquetas.forEach(etiqueta => {
+            this.getApiEtiquetas(etiqueta);
+          });
+        });
+      });
+    });
+  },
+  watch: {
+    page(newValue, oldValue) {
+      this.page = newValue;
+      this.getApiPersonas(newValue);
     }
-  },
-  mounted() {
-    this.getApiPersonas();
-  },
-
+  }
 }
 </script>
 <style scoped>
@@ -78,12 +95,14 @@ export default {
   height: 16px;
 }
 
-.v-card {
+.paginacion {
   direction: ltr;
-  transition: transform 0.3s;
 }
 
-.v-card:hover {
-  transform: scale(1.05);
+@media screen and (max-width: 600px) {
+  .card {
+    width: 100%;
+    height: auto;
+  }
 }
 </style>

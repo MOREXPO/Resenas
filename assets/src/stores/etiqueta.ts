@@ -4,14 +4,10 @@ import axios from 'axios';
 export const etiquetaStore = defineStore({
   id: "etiqueta",
   state: () => ({
-    loaded: false,
-    loading: false,
+    loading: true,
     etiquetas: [],
   }),
   getters: {
-    getLoaded: (state) => {
-      return state.loaded
-    },
     getLoading: (state) => {
       return state.loading
     },
@@ -20,15 +16,15 @@ export const etiquetaStore = defineStore({
     }
   },
   actions: {
-    async getApiEtiquetas() {
-      this.loading = true;
-      try {
-        const response = await axios.get('http://localhost/api/etiquetas');
-        this.loading = false;
-        console.log(response);
-      } catch (error) {
-        console.error(error);
-        this.loading = false;
+    async getApiEtiquetas(endpoint) {
+      if (this.etiquetas.some(etiqueta => etiqueta['@id'] !== endpoint) || this.etiquetas.length === 0) {
+        try {
+          const response = await axios.get('http://localhost' + endpoint);
+          this.etiquetas = this.updateGroup(response.data);
+          console.log(this.etiquetas);
+        } catch (error) {
+          console.error(error);
+        }
       }
     },
     setLoading(valor) {

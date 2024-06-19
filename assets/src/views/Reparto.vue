@@ -1,0 +1,151 @@
+<template>
+    <v-container>
+        <v-row v-if="pelicula && storePersona && elencos" class="my-5">
+            <v-col>
+                <v-breadcrumbs :items="['Películas', pelicula.nombre, 'Reparto']"></v-breadcrumbs>
+                <v-divider class="mb-5"></v-divider>
+                <h1 class="display-1">{{ pelicula.nombre }}</h1>
+            </v-col>
+        </v-row>
+        <v-container v-if="pelicula" id="content">
+            <v-row style="direction: ltr;">
+                <v-col cols="12" md="6">
+                    <v-container>
+                        <v-row>
+                            <h2>Directores</h2>
+                        </v-row>
+                        <v-row>
+                            <v-col v-for="director in directores" :key="director.id" cols="12" sm="6" md="4">
+                                <ArtistaCard small="true" :artista="director"></ArtistaCard>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-col>
+                <v-col cols="12" md="6">
+                    <v-container>
+                        <v-row>
+                            <h2>Guionistas</h2>
+                        </v-row>
+                        <v-row>
+                            <v-col v-for="guionista in guionistas" :key="guionista.id" cols="12" sm="6" md="4">
+                                <ArtistaCard small="true" :artista="guionista"></ArtistaCard>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-col>
+            </v-row>
+            <v-row style="direction: ltr;">
+                <v-col cols="12">
+                    <v-container>
+                        <v-row>
+                            <h2>Actores y Actrices</h2>
+                        </v-row>
+                        <v-row>
+                            <v-col v-for="actor in actores" :key="actor.id" cols="12" sm="6" md="4">
+                                <ArtistaCard small="true" :artista="actor"></ArtistaCard>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-col>
+            </v-row>
+        </v-container>
+        <v-row v-else class="text-center">
+            <v-col>
+                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                <p>Cargando...</p>
+            </v-col>
+        </v-row>
+    </v-container>
+</template>
+
+<script>
+import { mapState, mapActions } from 'pinia';
+import { audiovisualStore } from '../stores/audiovisual';
+import { personaStore } from '../stores/persona';
+import { elencoStore } from '../stores/elenco';
+import ArtistaCard from '../components/ArtistaCard.vue';
+import Peliculas from './Peliculas.vue';
+export default {
+    name: 'Reparto',
+    components: {
+        ArtistaCard
+    },
+    props: {
+        id: {
+            type: String,
+            required: true
+        }
+    },
+    methods: {
+        ...mapActions(personaStore, ["getApiPersona"]),
+        ...mapActions(elencoStore, ["getApiElencos"]),
+        ...mapActions(audiovisualStore, ["getApiAudiovisual"]),
+    },
+    computed: {
+        ...mapState(audiovisualStore, {
+            storeAudiovisual: store => store.store,
+            audiovisualLoading: store => store.loading,
+        }),
+        ...mapState(personaStore, {
+            storePersona: store => store.store,
+            personaLoading: store => store.loading,
+        }),
+        ...mapState(elencoStore, {
+            elencos: store => store.elencos,
+            elencoLoading: store => store.loading,
+        }),
+        pelicula() {
+            return this.storeAudiovisual.find(audiovisual => audiovisual.id == this.id);
+        },
+        directores() {
+            console.log(this.pelicula);
+            return this.storePersona.filter(x => this.elencos.some(y => y.etiqueta == '/api/etiquetas/7' && y.persona == x['@id'] && this.pelicula.elencos.some(w => w == y['@id'])));
+        },
+        guionistas() {
+            console.log(this.pelicula);
+            return this.storePersona.filter(x => this.elencos.some(y => y.etiqueta == '/api/etiquetas/6' && y.persona == x['@id'] && this.pelicula.elencos.some(w => w == y['@id'])));
+        },
+        actores() {
+            console.log(this.pelicula);
+            return this.storePersona.filter(x => this.elencos.some(y => (y.etiqueta == '/api/etiquetas/1' || y.etiqueta == '/api/etiquetas/2') && y.persona == x['@id'] && this.pelicula.elencos.some(w => w == y['@id'])));
+        },
+    },
+    async created() {
+        await this.getApiAudiovisual(this.id);
+        this.pelicula.elencos.forEach(elenco => {
+            this.getApiElencos(elenco).then(() => {
+                let elencoEntidad = this.elencos.find(x => x['@id'] == elenco);
+                this.getApiPersona(elencoEntidad.persona);
+            });
+
+        });
+    },
+};
+</script>
+
+<style scoped>
+#content {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    direction: rtl;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: width 0.2s;
+    max-height: 65vh;
+}
+
+#content::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#content::-webkit-scrollbar-thumb {
+    border-radius: 99px;
+    background-color: #d62929;
+}
+
+#content::-webkit-scrollbar-button {
+    height: 16px;
+}
+</style>

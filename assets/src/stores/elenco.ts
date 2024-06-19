@@ -4,14 +4,10 @@ import axios from 'axios';
 export const elencoStore = defineStore({
   id: "elenco",
   state: () => ({
-    loaded: false,
-    loading: false,
+    loading: true,
     elencos: [],
   }),
   getters: {
-    getLoaded: (state) => {
-      return state.loaded
-    },
     getLoading: (state) => {
       return state.loading
     },
@@ -20,15 +16,14 @@ export const elencoStore = defineStore({
     }
   },
   actions: {
-    async getApiElencos() {
-      this.loading = true;
-      try {
-        const response = await axios.get('http://localhost/api/elencos');
-        this.loading = false;
-        console.log(response);
-      } catch (error) {
-        console.error(error);
-        this.loading = false;
+    async getApiElencos(endpoint) {
+      if (this.elencos.some(elenco => elenco['@id'] !== endpoint) || this.elencos.length === 0) {
+        try {
+          const response = await axios.get('http://localhost' + endpoint);
+          this.elencos = this.updateGroup(response.data);
+        } catch (error) {
+          console.error(error);
+        }
       }
     },
     setLoading(valor) {
