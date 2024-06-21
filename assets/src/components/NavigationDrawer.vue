@@ -18,16 +18,41 @@
     <input id="nav-footer-toggle" type="checkbox" />
     <div id="nav-footer">
       <div id="nav-footer-heading">
-        <div id="nav-footer-avatar"><img src="https://gravatar.com/avatar/4474ca42d303761c2901fa819c4f2547" /></div>
-        <div id="nav-footer-titlebox">usuario<span id="nav-footer-subtitle">Admin</span></div>
+        <div id="nav-footer-avatar"><img
+            src="https://t3.ftcdn.net/jpg/05/53/79/60/360_F_553796090_XHrE6R9jwmBJUMo9HKl41hyHJ5gqt9oz.jpg" /></div>
+        <div id="nav-footer-titlebox" :class="user ? 'text-caption' : ''">{{ user ? user.email : 'Iniciar sesión' }}<span
+            id="nav-footer-subtitle">{{ user
+              && user.roles ? user.roles.join(', ') : '' }}</span></div>
         <label for="nav-footer-toggle"><i class="mdi mdi-menu-up"></i></label>
       </div>
       <div id="nav-footer-content">
-        <Lorem>Cerrar sesión</Lorem>
+        <a v-if="user" @click="logout" class="nav-button">Cerrar sesión</a>
+        <LoginForm v-else></LoginForm>
       </div>
     </div>
   </div>
 </template>
+<script>
+import { mapState, mapActions } from 'pinia';
+import { userStore } from '../stores/user';
+import LoginForm from '../components/LoginForm.vue';
+
+export default {
+  name: "navigationDrawer",
+  components: {
+    LoginForm
+  },
+  computed: {
+    ...mapState(userStore, {
+      user: store => store.user,
+      userLoading: store => store.loading,
+    }),
+  },
+  methods: {
+    ...mapActions(userStore, ["logout"]),
+  }
+}
+</script>
 <style scoped>
 #nav-toggle:checked~#nav-header {
   width: calc(var(--navbar-width-min) - 16px);
@@ -235,7 +260,8 @@ label[for=nav-toggle] {
 .nav-button {
   position: relative;
   margin-left: 16px;
-  background-color: transparent; /* Fondo inicial transparente */
+  background-color: transparent;
+  /* Fondo inicial transparente */
   height: 54px;
   display: flex;
   align-items: center;
@@ -362,7 +388,7 @@ label[for=nav-toggle] {
 #nav-footer-titlebox {
   position: relative;
   margin-left: 16px;
-  width: 10px;
+  width: 40%;
   display: flex;
   flex-direction: column;
   transition: opacity 1s;
@@ -374,7 +400,7 @@ label[for=nav-toggle] {
 }
 
 #nav-toggle:not(:checked)~#nav-footer-toggle:checked+#nav-footer {
-  height: 30%;
+  height: 65%;
   min-height: 54px;
 }
 

@@ -7,19 +7,23 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: InteligenciaArtificialRepository::class)]
-#[ApiResource]
+#[ApiResource(normalizationContext: ['groups' => ['ia:read']])]
 class InteligenciaArtificial
 {
+    #[Groups(['ia:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
+    
+    #[Groups(['ia:read'])]
     #[ORM\Column(length: 255)]
     private ?string $nombre = null;
 
+    #[Groups(['ia:read'])]
     #[ORM\OneToMany(mappedBy: 'inteligenciaArtificial', targetEntity: Valoracion::class)]
     private Collection $valoraciones;
 

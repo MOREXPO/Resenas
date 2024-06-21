@@ -1,5 +1,5 @@
 <template>
-    <div class="card" :style="small ? 'transform: scale(0.7);' : ''">
+    <div class="card">
         <div class="info">
             <div class="info-item">
                 <v-chip class="ma-2" color="indigo" prepend-icon="mdi-account-circle">
@@ -20,7 +20,7 @@
                 <div class="pa-2">
                     <v-responsive class="overflow-y-auto" max-height="280">
                         <v-chip-group column>
-                            <v-chip v-for="etiqueta in etiquetasArtista(artista)" :key="etiqueta.id"
+                            <v-chip v-for="etiqueta in artista.etiquetas" :key="etiqueta.id"
                                 :text="etiqueta.nombre" size="x-small"></v-chip>
                         </v-chip-group>
                     </v-responsive>
@@ -33,8 +33,7 @@
     </div>
 </template>
 <script>
-import { mapState, mapActions } from 'pinia';
-import { etiquetaStore } from '../stores/etiqueta';
+
 export default {
     name: "Artista Card",
     props: {
@@ -42,17 +41,6 @@ export default {
             type: Object,
             required: true
         },
-        small: {
-            type: Boolean,
-            required: true,
-            default: false
-        },
-    },
-    computed: {
-        ...mapState(etiquetaStore, {
-            etiquetas: store => store.etiquetas,
-            etiquetasLoading: store => store.loading,
-        }),
     },
     methods: {
         formatDate(dateString) {
@@ -62,10 +50,6 @@ export default {
             const year = date.getFullYear();
             return `${day}/${month}/${year}`;
         },
-        etiquetasArtista(artista) {
-            console.log(this.etiquetas);
-            return this.etiquetas.filter(x => artista.etiquetas.some(y => y == x['@id']));
-        },
     }
 }
 </script>
@@ -74,8 +58,8 @@ export default {
     direction: ltr;
     position: relative;
     border-radius: 10px;
-    width: 220px;
-    height: 300px;
+    width: 180px;
+    height: 260px;
     background-color: whitesmoke;
     -webkit-box-shadow: 1px 1px 12px #000;
     box-shadow: 1px 1px 12px #000;

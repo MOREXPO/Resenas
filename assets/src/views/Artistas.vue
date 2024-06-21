@@ -5,8 +5,17 @@
         <h1>Artistas</h1>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col cols="12" md="6">
+        <v-text-field v-model="filters.search" label="Buscar" outlined dense></v-text-field>
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-select v-model="sortBy" item-title="text" item-value="value" :items="sortOptions" label="Ordenar por"
+          outlined dense></v-select>
+      </v-col>
+    </v-row>
     <v-row v-if="!personasLoading" id="content">
-      <v-col v-for="artista in artistas" :key="artista.id" cols="12" sm="6" md="4">
+      <v-col v-for="artista in artistas" :key="artista.id" cols="3">
         <ArtistaCard :artista="artista"></ArtistaCard>
       </v-col>
       <v-col :cols="12" class="text-center paginacion">
@@ -24,13 +33,16 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 import { personaStore } from '../stores/persona';
-import { etiquetaStore } from '../stores/etiqueta';
 import ArtistaCard from '../components/ArtistaCard.vue';
 export default {
   name: "Artistas",
   data() {
     return {
       page: 1,
+      filters: {
+        search: '',
+      },
+      sortBy: 'id', // Criterio inicial de ordenamiento
     }
   },
   components: {
@@ -45,21 +57,21 @@ export default {
     artistas() {
       return this.personas[this.page];
     },
+    sortOptions() {
+      return [
+        { text: 'ID', value: 'id' },
+        { text: 'Título', value: 'nombre' },
+        { text: 'Fecha de lanzamiento', value: 'fechaLanzamiento' },
+        { text: 'Duración', value: 'duracion' },
+        // Agrega más opciones de ordenamiento según tus necesidades
+      ];
+    },
   },
   methods: {
     ...mapActions(personaStore, ["getApiPersonas"]),
-    ...mapActions(etiquetaStore, ["getApiEtiquetas", "setLoading"]),
   },
   created() {
-    this.getApiPersonas(this.page).then(() => {
-      this.personas.forEach((page) => {
-        page.forEach(persona => {
-          persona.etiquetas.forEach(etiqueta => {
-            this.getApiEtiquetas(etiqueta);
-          });
-        });
-      });
-    });
+    this.getApiPersonas(this.page);
   },
   watch: {
     page(newValue, oldValue) {
@@ -78,7 +90,7 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
   transition: width 0.2s;
-  max-height: 80vh;
+  max-height: 70vh;
 }
 
 #content::-webkit-scrollbar {

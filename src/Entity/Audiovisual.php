@@ -8,37 +8,47 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AudiovisualRepository::class)]
-#[ApiResource]
+#[ApiResource(normalizationContext: ['groups' => ['audiovisual:read']])]
 class Audiovisual
 {
+    #[Groups(['audiovisual:read','ia:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['audiovisual:read','ia:read'])]
     #[ORM\Column(length: 255)]
     private ?string $nombre = null;
 
+    #[Groups(['audiovisual:read'])]
     #[ORM\Column(length: 255)]
     private ?string $imagen = null;
 
+    #[Groups(['audiovisual:read'])]
     #[ORM\OneToMany(mappedBy: 'audiovisual', targetEntity: Elenco::class)]
     private Collection $elencos;
 
+    #[Groups(['audiovisual:read'])]
     #[ORM\Column(nullable: true)]
     private ?int $duracion = null;
 
+    #[Groups(['audiovisual:read'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $sinopsis = null;
 
+    #[Groups(['audiovisual:read'])]
     #[ORM\Column]
     private ?bool $pelicula = null;
 
+    #[Groups(['audiovisual:read'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $fechaLanzamiento = null;
 
+    #[Groups(['audiovisual:read'])]
     #[ORM\ManyToOne(inversedBy: 'audiovisuals')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Medio $medio = null;

@@ -8,34 +8,43 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PersonaRepository::class)]
-#[ApiResource]
+#[ApiResource(normalizationContext: ['groups' => ['persona:read']])]
 class Persona
 {
+    #[Groups(['audiovisual:read','persona:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['audiovisual:read','persona:read'])]
     #[ORM\Column(length: 255)]
     private ?string $nombre = null;
 
+    #[Groups(['audiovisual:read','persona:read'])]
     #[ORM\Column(length: 255)]
     private ?string $imagen = null;
 
+    #[Groups(['audiovisual:read','persona:read'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nacionalidad = null;
 
+    #[Groups(['audiovisual:read','persona:read'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $fechaNacimiento = null;
 
+    #[Groups(['audiovisual:read','persona:read'])]
     #[ORM\ManyToMany(targetEntity: Etiqueta::class, inversedBy: 'personas')]
     private Collection $etiquetas;
 
+    #[Groups(['persona:read','persona:read'])]
     #[ORM\OneToMany(mappedBy: 'persona', targetEntity: Elenco::class)]
     private Collection $elencos;
 
+    #[Groups(['audiovisual:read','persona:read'])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $resumen = null;
 

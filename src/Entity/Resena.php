@@ -8,29 +8,36 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ResenaRepository::class)]
 #[ApiResource]
 class Resena
 {
+    #[Groups(['audiovisual:read','ia:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['audiovisual:read'])]
     #[ORM\Column(length: 255)]
     private ?string $autor = null;
 
+    #[Groups(['audiovisual:read'])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $texto = null;
 
+    #[Groups(['ia:read'])]
     #[ORM\ManyToOne(inversedBy: 'resenas')]
     private ?Medio $medio = null;
 
+    #[Groups(['ia:read'])]
     #[ORM\ManyToOne(inversedBy: 'resenas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Pagina $pagina = null;
 
+    #[Groups(['audiovisual:read'])]
     #[ORM\OneToMany(mappedBy: 'resena', targetEntity: Valoracion::class)]
     private Collection $valoraciones;
 

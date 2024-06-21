@@ -25,7 +25,7 @@
                 <div class="pa-2">
                     <v-responsive class="overflow-y-auto" max-height="280">
                         <v-chip-group column>
-                            <v-chip v-for="categoria in categoriasPelicula(pelicula)" :key="categoria.id"
+                            <v-chip v-for="categoria in pelicula.medio.categorias" :key="categoria.id"
                                 :text="categoria.nombre" size="x-small"></v-chip>
                         </v-chip-group>
                     </v-responsive>
@@ -47,20 +47,13 @@
 </template>
 <script>
 import { mapState, mapActions } from 'pinia';
-import { categoriaStore } from '../stores/categoria';
 export default {
     name: "Pelicula Card",
     props: {
         pelicula: {
             type: Object,
             required: true
-        }
-    },
-    computed: {
-        ...mapState(categoriaStore, {
-            categorias: store => store.categorias,
-            categoriaLoading: store => store.loading,
-        }),
+        },
     },
     methods: {
         formatDate(dateString) {
@@ -73,9 +66,6 @@ export default {
         truncate(text, length = 100) {
             return text.length > length ? text.substring(0, length) + '...' : text;
         },
-        categoriasPelicula(pelicula) {
-            return this.categorias.filter(categoria => categoria.medios.some(x => x == pelicula.medio));
-        }
     }
 }
 </script>
@@ -84,8 +74,8 @@ export default {
     direction: ltr;
     position: relative;
     border-radius: 10px;
-    width: 220px;
-    height: 300px;
+    width: 180px;
+    height: 260px;
     background-color: whitesmoke;
     -webkit-box-shadow: 1px 1px 12px #000;
     box-shadow: 1px 1px 12px #000;

@@ -20,7 +20,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="h-100 ml-1 mr-1" style="width: 97%;">
+  <div class="h-100">
     <v-row no-gutters class="w-100 h-100">
       <v-layout v-if="isMobile">
         <v-app-bar color="teal-darken-4" image="https://picsum.photos/1920/1080?random">
@@ -49,10 +49,21 @@ onUnmounted(() => {
           </v-btn>
         </v-app-bar>
       </v-layout>
-      <NavigationDrawer v-else></NavigationDrawer>
-      <v-col class="w-100 h-100">
+      <NavigationDrawer class="ms-2" v-else></NavigationDrawer>
+      <v-col class="w-100 h-100 pe-10 col-ajustado">
         <Main></Main>
       </v-col>
     </v-row>
   </div>
 </template>
+<style scoped>
+.col-ajustado{
+  padding-inline-end: 40px !important;
+}
+
+@media (max-width: 768px) { /* Ajusta el tamaño según sea necesario */
+  .col-ajustado {
+    padding-inline-end: 0 !important; /* Sobrescribe el padding en móviles */
+  }
+}
+</style>

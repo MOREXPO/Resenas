@@ -10,6 +10,30 @@
         <v-row v-if="!audiovisualLoading" id="content">
             <v-col cols="12" md="4" style="direction: ltr;">
                 <v-img :src="pelicula.imagen" class="rounded-lg"></v-img>
+                <v-container>
+                    <v-row>
+                        <v-col>
+                            <div class="text-center">
+                                <v-rating v-model="valoracion" :item-labels="labels" readonly>
+                                    <template v-slot:item-label="props">
+                                        <span :class="`text-${colors[props.index]}`"
+                                            class="font-weight-black text-caption">
+                                            {{ props.label }}
+                                        </span>
+                                    </template>
+                                </v-rating>
+                                <pre>{{ valoracion }}</pre>
+                            </div>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col class="text-center" cols="12">
+                            <v-btn :to="{ name: 'resenas', params: { id: pelicula.id } }" color="primary">
+                                <v-icon class="mr-2" color="white">mdi-message-draw</v-icon>Ver {{pelicula.medio.resenas.length}} Reseñas
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-container>
             </v-col>
             <v-col cols="12" md="8" style="direction: ltr;">
                 <v-card class="pa-5 elevation-2">
@@ -34,8 +58,8 @@
                                 <div class="pa-2">
                                     <v-responsive class="overflow-y-auto" max-height="280">
                                         <v-chip-group column>
-                                            <v-chip v-for="categoria in categoriasPelicula(pelicula)"
-                                                :key="categoria.id" :text="categoria.nombre"></v-chip>
+                                            <v-chip v-for="categoria in pelicula.medio.categorias" :key="categoria.id"
+                                                :text="categoria.nombre"></v-chip>
                                         </v-chip-group>
                                     </v-responsive>
                                 </div>
@@ -70,7 +94,6 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 import { audiovisualStore } from '../stores/audiovisual';
-import { categoriaStore } from '../stores/categoria';
 
 export default {
     name: "Pelicula",
@@ -80,22 +103,45 @@ export default {
             required: true
         }
     },
+    data: () => ({
+        rating: 4,
+        colors: ['red', 'orange', 'grey', 'cyan', 'green'],
+        labels: ['bad', 'so so', 'ok', 'good', 'great'],
+    }),
     computed: {
         ...mapState(audiovisualStore, {
             storeAudiovisual: store => store.store,
             audiovisualLoading: store => store.loading,
         }),
-        ...mapState(categoriaStore, {
-            categorias: store => store.categorias,
-            categoriaLoading: store => store.loading,
-        }),
         pelicula() {
             return this.storeAudiovisual.find(audiovisual => audiovisual.id == this.id);
+        },
+        valoracion() {
+            let totalValoraciones = 0;
+            let totalCalificaciones = 0;
+
+            this.pelicula.medio.resenas.forEach(resena => {
+                resena.valoraciones.forEach(valoracion => {
+                    let valoracionAux = valoracion.calificacion ? valoracion.calificacion : 0;
+                    // Transformar la valoración del rango [-1, 1] al rango [0, 5]
+                    let valoracionTransformada = (valoracionAux + 1) * 2.5;
+                    totalValoraciones += valoracionTransformada;
+                    totalCalificaciones++;
+                });
+            });
+            console.log(totalValoraciones);
+            // Calcular la media de las valoraciones transformadas
+            let valoracionMedia = totalCalificaciones > 0 ? totalValoraciones / totalCalificaciones : 0;
+
+            // Redondear la valoración media a un decimal
+            let valoracionRedondeada = valoracionMedia.toFixed(1);
+
+            return valoracionRedondeada;
         }
+
     },
     methods: {
         ...mapActions(audiovisualStore, ["getApiAudiovisual"]),
-        ...mapActions(categoriaStore, ["getApiCategorias"]),
         formatDate(dateString) {
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date(dateString).toLocaleDateString(undefined, options);
@@ -103,13 +149,9 @@ export default {
         formatElenco(elencos) {
             return elencos.map(elenco => elenco.split('/').pop()).join(', ');
         },
-        categoriasPelicula(pelicula) {
-            return this.categorias.filter(categoria => categoria.medios.some(x => x == pelicula.medio));
-        }
     },
     created() {
         this.getApiAudiovisual(this.id);
-        this.getApiCategorias();
     }
 }
 </script>
@@ -142,5 +184,9 @@ export default {
 
 #content::-webkit-scrollbar-button {
     height: 16px;
+}
+
+.rating-values {
+    width: 25px;
 }
 </style>

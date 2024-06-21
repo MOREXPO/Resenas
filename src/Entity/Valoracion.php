@@ -5,23 +5,28 @@ namespace App\Entity;
 use App\Repository\ValoracionRepository;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ValoracionRepository::class)]
 #[ApiResource]
 class Valoracion
 {
+    #[Groups(['audiovisual:read','ia:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['audiovisual:read','ia:read'])]
     #[ORM\Column(nullable: true)]
     private ?float $calificacion = null;
 
+    #[Groups(['ia:read'])]
     #[ORM\ManyToOne(inversedBy: 'valoraciones')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Resena $resena = null;
 
+    #[Groups(['audiovisual:read'])]
     #[ORM\ManyToOne(inversedBy: 'valoraciones')]
     #[ORM\JoinColumn(nullable: false)]
     private ?InteligenciaArtificial $inteligenciaArtificial = null;

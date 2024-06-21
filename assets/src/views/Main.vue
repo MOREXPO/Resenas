@@ -22,4 +22,9 @@ import { RouterLink, RouterView } from 'vue-router'
   overflow: hidden;
   user-select: none;
 }
+@media (max-width: 768px) { /* Ajusta el tamaño según sea necesario */
+  #main {
+    left: 0%;
+  }
+}
 </style>
