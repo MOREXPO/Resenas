@@ -32,7 +32,7 @@ class Resena
     #[ORM\ManyToOne(inversedBy: 'resenas')]
     private ?Medio $medio = null;
 
-    #[Groups(['ia:read'])]
+    #[Groups(['ia:read','audiovisual:read'])]
     #[ORM\ManyToOne(inversedBy: 'resenas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Pagina $pagina = null;

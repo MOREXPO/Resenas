@@ -6,12 +6,17 @@ use App\Repository\PersonaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PersonaRepository::class)]
 #[ApiResource(normalizationContext: ['groups' => ['persona:read']])]
+#[ApiFilter(SearchFilter::class, properties: ['nombre' => 'partial'])]
+#[ApiFilter(OrderFilter::class, properties: ['id', 'nombre', 'duracion'], arguments: ['orderParameterName' => 'order'])]
 class Persona
 {
     #[Groups(['audiovisual:read','persona:read'])]

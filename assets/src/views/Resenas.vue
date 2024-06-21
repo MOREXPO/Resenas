@@ -1,13 +1,19 @@
 <template>
     <v-container>
-        <v-row v-if="!audiovisualLoading" class="w-100">
+        <v-row v-if="!audiovisualLoading && !paginasLoading && !iasLoading" class="w-100">
             <v-col cols="12" md="10" offset-md="1">
                 <div v-if="pelicula" class="review-container mx-auto">
                     <v-container>
                         <!-- Título de la película -->
                         <v-row align="center">
                             <v-col cols="12">
-                                <h3 >{{ pelicula.nombre }}</h3>
+                                <h3>{{ pelicula.nombre }}</h3>
+                            </v-col>
+                        </v-row>
+                        <!-- Título de la pagina -->
+                        <v-row align="center">
+                            <v-col cols="12">
+                                <h3>{{ pagina.nombre }}</h3>
                             </v-col>
                         </v-row>
 
@@ -77,6 +83,7 @@
 import { mapState, mapActions } from 'pinia';
 import { audiovisualStore } from '../stores/audiovisual';
 import { inteligenciaStore } from '../stores/inteligencia';
+import { paginaStore } from '../stores/pagina';
 
 export default {
     name: 'Resenas',
@@ -84,11 +91,16 @@ export default {
         id: {
             type: String,
             required: true
-        }
+        },
+        paginaId: {
+            type: String,
+            required: true
+        },
     },
     methods: {
         ...mapActions(audiovisualStore, ["getApiAudiovisual"]),
         ...mapActions(inteligenciaStore, ["getApiIas"]),
+        ...mapActions(paginaStore, ["getApiPaginas"]),
         resenaValoracionMedia(calificacion) {
             return (calificacion + 1) * 2.5;
         },
@@ -96,7 +108,7 @@ export default {
             let totalValoraciones = 0;
             let totalCalificaciones = 0;
             if (content.ia) {
-                content.ia.valoraciones.filter(x => x.resena.id == content.resena.id && x.resena.medio.audiovisuals.some(y => y.id == this.pelicula.id)).forEach(valoracion => {
+                content.ia.valoraciones.filter(x => x.resena.pagina.id == this.pagina.id && x.resena.id == content.resena.id && x.resena.medio.audiovisuals.some(y => y.id == this.pelicula.id)).forEach(valoracion => {
 
                     let valoracionAux = valoracion.calificacion ? valoracion.calificacion : 0;
                     // Transformar la valoración del rango [-1, 1] al rango [0, 5]
@@ -107,7 +119,7 @@ export default {
                 })
             } else {
                 this.ias.forEach(ia => {
-                    ia.valoraciones.filter(x => x.resena.id == content.resena.id && x.resena.medio.audiovisuals.some(y => y.id == this.pelicula.id)).forEach(valoracion => {
+                    ia.valoraciones.filter(x => x.resena.pagina.id == this.pagina.id && x.resena.id == content.resena.id && x.resena.medio.audiovisuals.some(y => y.id == this.pelicula.id)).forEach(valoracion => {
 
                         let valoracionAux = valoracion.calificacion ? valoracion.calificacion : 0;
                         // Transformar la valoración del rango [-1, 1] al rango [0, 5]
@@ -128,7 +140,7 @@ export default {
         mediaValoraciones(ia) {
             let totalValoraciones = 0;
             let totalCalificaciones = 0;
-            ia.valoraciones.filter(x => x.resena.medio.audiovisuals.some(y => y.id == this.pelicula.id)).forEach(valoracion => {
+            ia.valoraciones.filter(x => x.resena.pagina.id == this.pagina.id && x.resena.medio.audiovisuals.some(y => y.id == this.pelicula.id)).forEach(valoracion => {
 
                 let valoracionAux = valoracion.calificacion ? valoracion.calificacion : 0;
                 // Transformar la valoración del rango [-1, 1] al rango [0, 5]
@@ -154,8 +166,15 @@ export default {
             ias: store => store.ias,
             iasLoading: store => store.loading,
         }),
+        ...mapState(paginaStore, {
+            paginas: store => store.paginas,
+            paginasLoading: store => store.loading,
+        }),
         pelicula() {
             return this.storeAudiovisual.find(audiovisual => audiovisual.id == this.id);
+        },
+        pagina() {
+            return this.paginas.find(x => x.id == this.paginaId);
         },
         valoracionMediaGlobal() {
             if (!this.pelicula) return 0;
@@ -181,6 +200,7 @@ export default {
                 this.getApiIas(valoracion.inteligenciaArtificial);
             });
         });
+        this.getApiPaginas();
     }
 };
 </script>

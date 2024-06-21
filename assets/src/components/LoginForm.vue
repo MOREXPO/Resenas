@@ -1,6 +1,6 @@
 <template>
 
-    <div class="container">
+    <div v-if="!userLoading" class="container">
         <input type="radio" name="tab" id="signin" checked="checked" />
         <input type="radio" name="tab" id="register" />
         <div class="pages">
@@ -52,6 +52,16 @@
             </label>
         </div>
     </div>
+    <div v-else>
+        <v-container>
+            <v-row class="text-center">
+                <v-col>
+                    <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                    <p>Cargando...</p>
+                </v-col>
+            </v-row>
+        </v-container>
+    </div>
 </template>
 <script>
 import { mapState, mapActions } from 'pinia';
@@ -73,6 +83,12 @@ export default {
                 v => !!v.trim() || 'La contraseña no puede ser vacia',
             ],
         }
+    },
+    computed: {
+        ...mapState(userStore, {
+            user: store => store.user,
+            userLoading: store => store.loading,
+        }),
     },
     methods: {
         ...mapActions(userStore, ["login", "register"]),

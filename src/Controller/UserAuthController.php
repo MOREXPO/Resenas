@@ -14,6 +14,13 @@ class UserAuthController extends AbstractController
     }
     public function __invoke(): JsonResponse
     {
-        return new JsonResponse(["id" => $this->getUser()->getId(), "email" => $this->getUser()->getEmail(), "roles" => $this->getUser()->getRoles()]);
+        return new JsonResponse([
+            "id" => $this->getUser()->getId(),
+            "email" => $this->getUser()->getEmail(),
+            "roles" => $this->getUser()->getRoles(),
+            "audiovisuals" => $this->getUser()->getAudiovisuals()->map(function ($audiovisual) {
+                return '/api/audiovisuals/' . $audiovisual->getId();
+            })->toArray()
+        ]);
     }
 }

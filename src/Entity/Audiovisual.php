@@ -2,25 +2,51 @@
 
 namespace App\Entity;
 
+use App\Controller\AudiovisualsMediasController;
 use App\Repository\AudiovisualRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Delete;
 
 #[ORM\Entity(repositoryClass: AudiovisualRepository::class)]
-#[ApiResource(normalizationContext: ['groups' => ['audiovisual:read']])]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            controller: AudiovisualsMediasController::class,
+            uriTemplate: '/audiovisuals/medias/{page}/{orderBy}',
+            name: 'audiovisuals_medias',
+            read: false
+        ),
+        new GetCollection(),
+        new Put(),
+        new Post(),
+        new Delete(),
+        new Get(),
+    ],
+    normalizationContext: ['groups' => ['audiovisual:read']]
+)]
+#[ApiFilter(SearchFilter::class, properties: ['nombre' => 'partial'])]
+#[ApiFilter(OrderFilter::class, properties: ['id', 'nombre', 'fechaLanzamiento', 'duracion'], arguments: ['orderParameterName' => 'order'])]
 class Audiovisual
 {
-    #[Groups(['audiovisual:read','ia:read'])]
+    #[Groups(['audiovisual:read', 'ia:read', 'user:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['audiovisual:read','ia:read'])]
+    #[Groups(['audiovisual:read', 'ia:read'])]
     #[ORM\Column(length: 255)]
     private ?string $nombre = null;
 
@@ -53,10 +79,14 @@ class Audiovisual
     #[ORM\JoinColumn(nullable: false)]
     private ?Medio $medio = null;
 
-    
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'audiovisuals', cascade: ['persist'])]
+    private Collection $users;
+
+
 
     public function __construct()
     {
+        $this->users = new ArrayCollection();
         $this->elencos = new ArrayCollection();
     }
 
@@ -175,6 +205,30 @@ class Audiovisual
     public function setMedio(?Medio $medio): self
     {
         $this->medio = $medio;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        $this->users->removeElement($user);
 
         return $this;
     }

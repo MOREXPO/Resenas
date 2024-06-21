@@ -26,10 +26,14 @@
                             </div>
                         </v-col>
                     </v-row>
-                    <v-row>
+                    <v-row v-for="pagina in paginas">
                         <v-col class="text-center" cols="12">
-                            <v-btn :to="{ name: 'resenas', params: { id: pelicula.id } }" color="primary">
-                                <v-icon class="mr-2" color="white">mdi-message-draw</v-icon>Ver {{pelicula.medio.resenas.length}} Reseñas
+                            <v-btn class="text-caption" :to="{ name: 'resenas', params: { id: pelicula.id, paginaId: pagina.id } }"
+                                color="primary">
+                                <v-icon class="mr-2" color="white">mdi-message-draw</v-icon>Ver
+                                {{ pelicula.medio.resenas.filter(x => pagina.resenas.some(y => y == x['@id'])).length }}
+                                Reseñas de {{
+                                    pagina.nombre }}
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -94,6 +98,7 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 import { audiovisualStore } from '../stores/audiovisual';
+import { paginaStore } from '../stores/pagina';
 
 export default {
     name: "Pelicula",
@@ -112,6 +117,10 @@ export default {
         ...mapState(audiovisualStore, {
             storeAudiovisual: store => store.store,
             audiovisualLoading: store => store.loading,
+        }),
+        ...mapState(paginaStore, {
+            paginas: store => store.paginas,
+            paginasLoading: store => store.loading,
         }),
         pelicula() {
             return this.storeAudiovisual.find(audiovisual => audiovisual.id == this.id);
@@ -142,6 +151,7 @@ export default {
     },
     methods: {
         ...mapActions(audiovisualStore, ["getApiAudiovisual"]),
+        ...mapActions(paginaStore, ["getApiPaginas"]),
         formatDate(dateString) {
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date(dateString).toLocaleDateString(undefined, options);
@@ -152,6 +162,7 @@ export default {
     },
     created() {
         this.getApiAudiovisual(this.id);
+        this.getApiPaginas();
     }
 }
 </script>

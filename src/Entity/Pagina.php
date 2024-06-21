@@ -13,13 +13,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource]
 class Pagina
 {
-    #[Groups(['ia:read'])]
+    #[Groups(['ia:read','audiovisual:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['ia:read'])]
+    #[Groups(['ia:read','audiovisual:read'])]
     #[ORM\Column(length: 255)]
     private ?string $nombre = null;
 

@@ -6,19 +6,23 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col cols="12" md="6">
-                <v-text-field v-model="filters.search" label="Buscar" outlined dense></v-text-field>
+            <v-col cols="12" md="4">
+                <v-text-field @keydown.enter="buscar" v-model="search" label="Buscar" outlined dense></v-text-field>
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
                 <v-select v-model="sortBy" item-title="text" item-value="value" :items="sortOptions" label="Ordenar por"
                     outlined dense></v-select>
             </v-col>
+            <v-col cols="12" md="4">
+                <v-select v-model="orderBy" item-title="text" item-value="value" :items="orderOptions"
+                    label="Criterio de ordenación" outlined dense></v-select>
+            </v-col>
         </v-row>
         <v-row v-if="!audiovisualLoading" id="content">
-            <v-col v-for="pelicula in filteredAndSortedPeliculas" :key="pelicula.id" cols="3" md="3" sm="6" xs="12">
+            <v-col v-for="pelicula in peliculas" :key="pelicula.id" cols="3" md="3" sm="6" xs="12">
                 <PeliculaCard :pelicula="pelicula"></PeliculaCard>
             </v-col>
-            <v-col :cols="12" class="text-center paginacion">
+            <v-col v-if="search.trim().length === 0" :cols="12" class="text-center paginacion">
                 <v-pagination v-model="page" class="my-4" :total-visible="7" :length="lastPage"
                     color="primary"></v-pagination>
             </v-col>
@@ -43,10 +47,9 @@ export default {
     data() {
         return {
             page: 1,
-            filters: {
-                search: '',
-            },
+            search: '',
             sortBy: 'id', // Criterio inicial de ordenamiento
+            orderBy: 'desc',
         }
     },
     components: {
@@ -65,36 +68,72 @@ export default {
                 { text: 'Título', value: 'nombre' },
                 { text: 'Fecha de lanzamiento', value: 'fechaLanzamiento' },
                 { text: 'Duración', value: 'duracion' },
+                { text: 'Valoración', value: 'valoracion' },
                 // Agrega más opciones de ordenamiento según tus necesidades
             ];
         },
-        filteredAndSortedPeliculas() {
-            let peliculas = this.audiovisuals[this.page] || [];
-            // Aplicar filtro por búsqueda
-            peliculas = peliculas.filter(pelicula =>
-                pelicula.nombre.toLowerCase().includes(this.filters.search.toLowerCase())
-            );
-            console.log(peliculas);
-            // Ordenar películas
-            peliculas.sort((a, b) => {
-                if (a[this.sortBy] < b[this.sortBy]) return -1;
-                if (a[this.sortBy] > b[this.sortBy]) return 1;
-                return 0;
-            });
-            return peliculas;
+        orderOptions() {
+            return [
+                { text: 'ASCENDETE', value: 'asc' },
+                { text: 'DESCENDENTE', value: 'desc' },
+            ];
         },
+        peliculas() {
+            if (this.search.trim().length === 0) {
+                return this.audiovisuals[this.sortBy][this.orderBy] && this.audiovisuals[this.sortBy][this.orderBy][this.page]
+                    ? this.audiovisuals[this.sortBy][this.orderBy][this.page]
+                    : [];
+            } else {
+                return this.audiovisuals[this.search][this.sortBy][this.orderBy]
+                    ? this.audiovisuals[this.search][this.sortBy][this.orderBy]
+                    : [];
+            }
+        }
     },
     methods: {
-        ...mapActions(audiovisualStore, ["getApiAudiovisuals"]),
+        ...mapActions(audiovisualStore, ["getApiAudiovisuals", "getPeliculasByNombre", "getApiAudiovisualsValoracion"]),
+        buscar() {
+            if (this.search.trim().length !== 0) {
+                this.getPeliculasByNombre(this.search, this.sortBy, this.orderBy);
+            } else {
+                this.getApiAudiovisuals(this.page, this.sortBy, this.orderBy);
+            }
+        }
     },
     created() {
-        this.getApiAudiovisuals(this.page);
+        this.getApiAudiovisuals(this.page, this.sortBy, this.orderBy);
     },
     watch: {
-        page(newValue, oldValue) {
-            this.page = newValue;
-            this.getApiAudiovisuals(newValue);
-        }
+        page(newValue) {
+
+            this.getApiAudiovisuals(newValue, this.sortBy, this.orderBy);
+
+        },
+        search(newValue) {
+            if (newValue.trim().length !== 0) {
+                this.getPeliculasByNombre(newValue, this.sortBy, this.orderBy);
+            } else {
+                this.getApiAudiovisuals(this.page, this.sortBy, this.orderBy);
+            }
+        },
+        sortBy(newValue) {
+            if (newValue.trim() == 'valoracion') {
+                console.log(newValue);
+                this.getApiAudiovisualsValoracion(this.page, this.orderBy);
+            } else {
+                console.log(newValue);
+                this.getApiAudiovisuals(this.page, newValue, this.orderBy);
+            }
+        },
+        orderBy(newValue) {
+            if (newValue.trim() == 'valoracion') {
+                console.log(newValue);
+                this.getApiAudiovisualsValoracion(this.page, this.orderBy);
+            } else {
+                console.log(newValue);
+                this.getApiAudiovisuals(this.page, this.sortBy, newValue);
+            }
+        },
     }
 }
 </script>

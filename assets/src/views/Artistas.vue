@@ -7,7 +7,7 @@
     </v-row>
     <v-row>
       <v-col cols="12" md="6">
-        <v-text-field v-model="filters.search" label="Buscar" outlined dense></v-text-field>
+        <v-text-field @keydown.enter="buscar" v-model="search" label="Buscar" outlined dense></v-text-field>
       </v-col>
       <v-col cols="12" md="6">
         <v-select v-model="sortBy" item-title="text" item-value="value" :items="sortOptions" label="Ordenar por"
@@ -18,7 +18,7 @@
       <v-col v-for="artista in artistas" :key="artista.id" cols="3">
         <ArtistaCard :artista="artista"></ArtistaCard>
       </v-col>
-      <v-col :cols="12" class="text-center paginacion">
+      <v-col v-if="search.trim().length === 0" :cols="12" class="text-center paginacion">
         <v-pagination v-model="page" class="my-4" :total-visible="7" :length="lastPage" color="primary"></v-pagination>
       </v-col>
     </v-row>
@@ -39,9 +39,7 @@ export default {
   data() {
     return {
       page: 1,
-      filters: {
-        search: '',
-      },
+      search: '',
       sortBy: 'id', // Criterio inicial de ordenamiento
     }
   },
@@ -55,7 +53,15 @@ export default {
       personasLoading: store => store.loading,
     }),
     artistas() {
-      return this.personas[this.page];
+      if (this.search.trim().length === 0) {
+        return this.personas['general'] && this.personas['general'][this.page]
+          ? this.personas['general'][this.page]
+          : [];
+      } else {
+        return this.personas[this.search]
+          ? this.personas[this.search]
+          : [];
+      }
     },
     sortOptions() {
       return [
@@ -68,7 +74,14 @@ export default {
     },
   },
   methods: {
-    ...mapActions(personaStore, ["getApiPersonas"]),
+    ...mapActions(personaStore, ["getApiPersonas", "getPersonasByNombre"]),
+    buscar() {
+      if (this.search.trim().length !== 0) {
+        this.getPersonasByNombre(this.search);
+      } else {
+        this.getApiPersonas(this.page);
+      }
+    }
   },
   created() {
     this.getApiPersonas(this.page);
@@ -77,6 +90,13 @@ export default {
     page(newValue, oldValue) {
       this.page = newValue;
       this.getApiPersonas(newValue);
+    },
+    search(newValue) {
+      if (newValue.trim().length !== 0) {
+        this.getPersonasByNombre(newValue);
+      } else {
+        this.getApiPersonas(this.page);
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Peliculas from '../views/Peliculas.vue'
+import PeliculasFav from '../views/PeliculasFav.vue'
 import Pelicula from '../views/Pelicula.vue'
 import Artistas from '../views/Artistas.vue'
 import Reparto from '../views/Reparto.vue'
@@ -16,6 +17,11 @@ const router = createRouter({
       path: '/peliculas',
       name: 'peliculas',
       component: Peliculas
+    },
+    {
+      path: '/peliculas/favoritas',
+      name: 'peliculasFav',
+      component: PeliculasFav
     },
     {
       path: '/artistas',
@@ -35,7 +41,7 @@ const router = createRouter({
       props: true  // Permite pasar el parámetro id como prop al componente
     },
     {
-      path: '/peliculas/:id/resenas',  // Añade la ruta dinámica
+      path: '/peliculas/:id/resenas/:paginaId',  // Añade la ruta dinámica
       name: 'resenas',
       component: Resenas,
       props: true  // Permite pasar el parámetro id como prop al componente

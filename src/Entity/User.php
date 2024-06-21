@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Controller\addAudiovisualController;
 use App\Controller\UserAuthController;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,6 +15,9 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Delete;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
@@ -27,10 +31,17 @@ use ApiPlatform\Metadata\Delete;
             security: "is_granted('ROLE_USER')",
         ),
         new Put(
-            security: "is_granted('ROLE_USER') and object.id == user.id"
+            security: "is_granted('ROLE_USER') and object.getId() == user.getId()"
+        ),
+        new Put(
+            controller: AddAudiovisualController::class,
+            uriTemplate: '/user/add/{id}',
+            name: 'user_add_audiovisual',
+            read: false,
+            security: "is_granted('ROLE_USER')"
         ),
         new Delete(
-            security: "is_granted('ROLE_USER') and object.id == user.id"
+            security: "is_granted('ROLE_USER') and object.getId() == user.getId()"
         ),
         new Post(security: "is_granted('ROLE_USER')"),
         new Post(
@@ -40,17 +51,21 @@ use ApiPlatform\Metadata\Delete;
         ),
         new GetCollection(),
     ],
+    normalizationContext: ['groups' => ['user:read']]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    #[Groups(['user:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
+    #[Groups(['user:read'])]
     #[ORM\Column]
     private array $roles = [];
 
@@ -59,6 +74,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[Groups(['user:read'])]
+    #[ORM\ManyToMany(targetEntity: Audiovisual::class, mappedBy: 'users')]
+    private Collection $audiovisuals;
+
+    public function __construct()
+    {
+        $this->audiovisuals = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -118,6 +142,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->password = $password;
 
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Audiovisual>
+     */
+    public function getAudiovisuals(): Collection
+    {
+        return $this->audiovisuals;
+    }
+
+    public function addAudiovisual(Audiovisual $audiovisual): self
+    {
+        if (!$this->audiovisuals->contains($audiovisual)) {
+            $this->audiovisuals->add($audiovisual);
+            $audiovisual->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAudiovisual(Audiovisual $audiovisual): self
+    {
+        if ($this->audiovisuals->removeElement($audiovisual)) {
+            $audiovisual->removeUser($this);
+        }
         return $this;
     }
 

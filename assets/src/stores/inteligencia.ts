@@ -17,11 +17,14 @@ export const inteligenciaStore = defineStore({
   },
   actions: {
     async getApiIas(endpoint) {
+      this.loading=true;
       if (this.ias.some(ia => ia['@id'] !== endpoint) || this.ias.length === 0) {
         try {
           const response = await axios.get('http://localhost' + endpoint);
           this.ias = this.updateGroup(response.data);
+          this.loading=false;
         } catch (error) {
+          this.loading=false;
           console.error(error);
         }
       }

@@ -1,26 +1,6 @@
-<script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import NavigationDrawer from './components/NavigationDrawer.vue'
-import Main from './views/Main.vue'
-
-const isMobile = ref(false)
-
-const handleResize = () => {
-  isMobile.value = window.innerWidth <= 768 // Ajusta el valor según tus necesidades
-}
-
-onMounted(() => {
-  handleResize()
-  window.addEventListener('resize', handleResize)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
-})
-</script>
-
 <template>
   <div class="h-100">
+    <notifications position="bottom right" />
     <v-row no-gutters class="w-100 h-100">
       <v-layout v-if="isMobile">
         <v-app-bar color="teal-darken-4" image="https://picsum.photos/1920/1080?random">
@@ -56,14 +36,54 @@ onUnmounted(() => {
     </v-row>
   </div>
 </template>
+<script lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
+import { mapState, mapActions } from 'pinia';
+import { userStore } from './stores/user';
+import NavigationDrawer from './components/NavigationDrawer.vue'
+import Main from './views/Main.vue'
+
+export default {
+  name: "App",
+  components: {
+    NavigationDrawer,
+    Main
+  },
+  data() {
+    return {
+      isMobile: ref(false)
+    };
+  },
+  methods: {
+    ...mapActions(userStore, ["getApiUser", "setToken"]),
+    handleResize() {
+      this.isMobile = window.innerWidth <= 768 // Ajusta el valor según tus necesidades
+    }
+  },
+  mounted() {
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize);
+    if (sessionStorage.getItem('token')) {
+      this.setToken(sessionStorage.getItem('token'));
+      this.getApiUser();
+    }
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.handleResize)
+  }
+}
+</script>
 <style scoped>
-.col-ajustado{
+.col-ajustado {
   padding-inline-end: 40px !important;
 }
 
-@media (max-width: 768px) { /* Ajusta el tamaño según sea necesario */
+@media (max-width: 768px) {
+
+  /* Ajusta el tamaño según sea necesario */
   .col-ajustado {
-    padding-inline-end: 0 !important; /* Sobrescribe el padding en móviles */
+    padding-inline-end: 0 !important;
+    /* Sobrescribe el padding en móviles */
   }
 }
 </style>

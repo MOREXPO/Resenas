@@ -1,44 +1,59 @@
 <template>
     <div class="card">
         <div class="info">
-            <div class="info-item">
-                <v-chip class="ma-2" color="indigo" prepend-icon="mdi-movie">
-                    {{ pelicula.nombre }}
-                </v-chip>
-            </div>
-            <div class="info-item">
-                <v-chip class="ma-2" color="orange" prepend-icon="mdi-calendar">
-                    {{ formatDate(pelicula.fechaLanzamiento) }}
-                </v-chip>
-            </div>
-            <div class="info-item">
-                <v-chip class="ma-2" color="green">
-                    <template v-slot:prepend>
-                        <v-avatar class="green-darken-4">
-                            {{ pelicula.duracion }}
-                        </v-avatar>
-                    </template>
-                    Minutos
-                </v-chip>
-            </div>
-            <div class="info-item">
-                <div class="pa-2">
-                    <v-responsive class="overflow-y-auto" max-height="280">
+            <v-container class="ms-0 ps-0">
+                <v-row>
+                    <!-- Información principal -->
+                    <v-col cols="12">
+                        <v-chip color="indigo" prepend-icon="mdi-movie">
+                            {{ pelicula.nombre }}
+                        </v-chip>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-chip color="orange" prepend-icon="mdi-calendar">
+                            {{ formatDate(pelicula.fechaLanzamiento) }}
+                        </v-chip>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-chip color="green">
+                            <template v-slot:prepend>
+                                <v-avatar class="green darken-4">
+                                    {{ pelicula.duracion }}
+                                </v-avatar>
+                            </template>
+                            Minutos
+                        </v-chip>
+                    </v-col>
+                    <v-col cols="12">
                         <v-chip-group column>
                             <v-chip v-for="categoria in pelicula.medio.categorias" :key="categoria.id"
                                 :text="categoria.nombre" size="x-small"></v-chip>
                         </v-chip-group>
-                    </v-responsive>
-                </div>
-            </div>
-            <div class="info-item">
-                <p>{{ truncate(pelicula.sinopsis) }}</p>
-            </div>
-            <div class="info-item">
-                <router-link :to="'/peliculas/' + pelicula.id" class="btn btn-primary">
-                    <span>Mas detalles</span>
-                </router-link>
-            </div>
+                    </v-col>
+                    <v-col cols="12">
+                        <p>{{ truncate(pelicula.sinopsis) }}</p>
+                    </v-col>
+                    <v-col cols="12">
+                        <router-link :to="'/peliculas/' + pelicula.id">
+                            <span>Más detalles</span>
+                        </router-link>
+                    </v-col>
+                    <v-col cols="12">
+                        <div class="info-item">
+                            <v-icon color="amber darken-1">mdi-star</v-icon>
+                            <span class="ml-2">{{ valoracion }}</span>
+                        </div>
+                    </v-col>
+                    <!-- Botón de favorito (si el usuario está autenticado) -->
+                    <v-col v-if="user" cols="12">
+                        <v-btn @click="addPelicula(pelicula.id)" class="ma-2"
+                            :color="user.audiovisuals.some(x => x === '/api/audiovisuals/' + pelicula.id) ? 'red' : 'grey'"
+                            icon>
+                            <v-icon>mdi-heart</v-icon>
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-container>
         </div>
 
         <div class="cover" :style="{ 'background-image': 'url(' + pelicula.imagen + ')' }">
@@ -47,6 +62,7 @@
 </template>
 <script>
 import { mapState, mapActions } from 'pinia';
+import { userStore } from '../stores/user';
 export default {
     name: "Pelicula Card",
     props: {
@@ -55,7 +71,35 @@ export default {
             required: true
         },
     },
+    computed: {
+        ...mapState(userStore, {
+            user: store => store.user,
+        }),
+        valoracion() {
+            let totalValoraciones = 0;
+            let totalCalificaciones = 0;
+
+            this.pelicula.medio.resenas.forEach(resena => {
+                resena.valoraciones.forEach(valoracion => {
+                    let valoracionAux = valoracion.calificacion ? valoracion.calificacion : 0;
+                    // Transformar la valoración del rango [-1, 1] al rango [0, 5]
+                    let valoracionTransformada = (valoracionAux + 1) * 2.5;
+                    totalValoraciones += valoracionTransformada;
+                    totalCalificaciones++;
+                });
+            });
+            console.log(totalValoraciones);
+            // Calcular la media de las valoraciones transformadas
+            let valoracionMedia = totalCalificaciones > 0 ? totalValoraciones / totalCalificaciones : 0;
+
+            // Redondear la valoración media a un decimal
+            let valoracionRedondeada = valoracionMedia.toFixed(1);
+
+            return valoracionRedondeada;
+        }
+    },
     methods: {
+        ...mapActions(userStore, ["addPelicula"]),
         formatDate(dateString) {
             const date = new Date(dateString);
             const day = String(date.getDate()).padStart(2, '0');
@@ -168,5 +212,9 @@ export default {
     /* Oculta el contenido que sobrepase */
     text-overflow: ellipsis;
     /* Añade puntos suspensivos si el contenido se recorta */
+}
+
+.btn:hover {
+    background-color: #1565C0;
 }
 </style>

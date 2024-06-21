@@ -20,12 +20,15 @@
       <div id="nav-footer-heading">
         <div id="nav-footer-avatar"><img
             src="https://t3.ftcdn.net/jpg/05/53/79/60/360_F_553796090_XHrE6R9jwmBJUMo9HKl41hyHJ5gqt9oz.jpg" /></div>
-        <div id="nav-footer-titlebox" :class="user ? 'text-caption' : ''">{{ user ? user.email : 'Iniciar sesión' }}<span
-            id="nav-footer-subtitle">{{ user
-              && user.roles ? user.roles.join(', ') : '' }}</span></div>
+        <div id="nav-footer-titlebox" :class="user ? 'text-caption' : ''">{{ user ? user.email : 'Iniciar sesión'
+          }}<span id="nav-footer-subtitle">{{ user
+            && user.roles ? user.roles.join(', ') : '' }}</span></div>
         <label for="nav-footer-toggle"><i class="mdi mdi-menu-up"></i></label>
       </div>
       <div id="nav-footer-content">
+        <router-link v-if="user" to="/peliculas/favoritas" class="nav-button">
+          Lista de favoritos
+        </router-link>
         <a v-if="user" @click="logout" class="nav-button">Cerrar sesión</a>
         <LoginForm v-else></LoginForm>
       </div>
