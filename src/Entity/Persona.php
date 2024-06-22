@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: PersonaRepository::class)]
 #[ApiResource(normalizationContext: ['groups' => ['persona:read']])]
 #[ApiFilter(SearchFilter::class, properties: ['nombre' => 'partial'])]
-#[ApiFilter(OrderFilter::class, properties: ['id', 'nombre', 'duracion'], arguments: ['orderParameterName' => 'order'])]
+#[ApiFilter(OrderFilter::class, properties: ['id', 'nombre', 'fechaNacimiento'], arguments: ['orderParameterName' => 'order'])]
 class Persona
 {
     #[Groups(['audiovisual:read','persona:read'])]

@@ -9,8 +9,7 @@ export const audiovisualStore = defineStore({
   state: () => ({
     audiovisuals: {},
     store: [],
-    lastPage: 0,
-    lastPageOrder: 0,
+    lastPage: {},
     loading: true,
   }),
   getters: {
@@ -28,125 +27,92 @@ export const audiovisualStore = defineStore({
     },
   },
   actions: {
-    async getApiAudiovisuals(page, sortBy = null, orderBy = 'desc') {
-      if (!(sortBy in this.audiovisuals)) {
-        this.audiovisuals[sortBy] = {};
+    async getApiAudiovisuals(page, search = '', sortBy = 'id', orderBy = 'desc') {
+      if (!(search in this.audiovisuals)) {
+        this.audiovisuals[search] = {};
       }
-      if (!(page in this.audiovisuals[sortBy])) {
-        if (!(orderBy in this.audiovisuals[sortBy])) {
-          this.audiovisuals[sortBy][orderBy] = {};
-        }
-        if (!(page in this.audiovisuals[sortBy][orderBy])) {
-          this.loading = true;
-          try {
-            let response = null;
-            if (sortBy && sortBy !== 'valoracion') {
-              response = await axios.get(`http://localhost/api/audiovisuals?page=${page}&order[${sortBy}]=${orderBy}`, {
-                headers: {
-                  'accept': 'application/ld+json',
-                },
-              });
-            } else {
-              response = await axios.get(`http://localhost/api/audiovisuals?page=${page}`, {
-                headers: {
-                  'accept': 'application/ld+json',
-                },
-              });
-            }
-
-            this.$patch(state => {
-              state.audiovisuals[sortBy][orderBy][page] = response.data['hydra:member'];
-            });
-            const match = response.data['hydra:view']['hydra:last'].match(/page=(\d+)/);
-            if (match) {
-              this.lastPage = parseInt(match[1], 10);
-            }
-            console.log(this.audiovisuals);
-          } catch (error) {
-            notify({
-              type: "error",
-              text: "Error al cargar las peliculas",
-            });
-            console.error('Error:', error);
-          } finally {
-            this.loading = false;
-          }
-        }
+      if (!(sortBy in this.audiovisuals[search])) {
+        this.audiovisuals[search][sortBy] = {};
       }
-    },
-    async getApiAudiovisualsValoracion(page, order) {
-      if (!(order in this.audiovisuals)) {
-        this.$patch(state => {
-          state.audiovisuals[order] = {};
-        });
+      if (!(orderBy in this.audiovisuals[search][sortBy])) {
+        this.audiovisuals[search][sortBy][orderBy] = {};
+      }
+      if (!(page in this.audiovisuals[search][sortBy][orderBy])) {
         this.loading = true;
         try {
-          const response = await axios.get(`http://localhost/api/audiovisuals/medias/${page}/${order}`, {
-            headers: {
-              'accept': 'application/ld+json',
-            },
-          });
-          let content = response.data['hydra:member'];
-          content['results'].forEach(async element => {
-            const response = await axios.get(`http://localhost/api/audiovisuals/${element['audiovisual_id']}`, {
+          let response = null;
+          if (sortBy == 'valoracion') {
+            if (!Array.isArray(this.audiovisuals[search][sortBy][orderBy][page])) {
+              this.audiovisuals[search][sortBy][orderBy][page] = [];
+            }
+            axios.get(`http://localhost/api/audiovisuals/medias/${page}/${orderBy}`, {
+              headers: {
+                'accept': 'application/ld+json',
+              },
+            }).then((response) => {
+              let content = response.data;
+              console.log(content);
+              content['results'].forEach(x => {
+                axios.get(`http://localhost/api/audiovisuals/${x.audiovisual_id}`, {
+                  headers: {
+                    'accept': 'application/ld+json',
+                  },
+                }).then((response) => {
+                  this.audiovisuals[search][sortBy][orderBy][page].push(response.data);
+                })
+              });
+              if (!(search in this.lastPage)) {
+                this.lastPage[search] = {};
+              }
+              if (!(sortBy in this.lastPage[search])) {
+                this.lastPage[search][sortBy] = {};
+              }
+              this.lastPage[search][sortBy][orderBy] = content['totalPages'];
+              //ordenar por desc o asc audiovisuals
+              const idToPosition = {};
+              content['results'].forEach((item, index) => {
+                idToPosition[item.audiovisual_id] = index;
+              });
+
+              // Ordenar this.audiovisuals basado en el diccionario idToPosition
+              this.audiovisuals[search][sortBy][orderBy][page].sort((a, b) => {
+                return idToPosition[a.id] - idToPosition[b.id];
+              });
+
+              // Comprobar el resultado
+              console.log(this.audiovisuals[search][sortBy][orderBy][page]);
+
+            });
+          } else {
+            response = await axios.get(`http://localhost/api/audiovisuals?nombre=${search}&page=${page}&order[${sortBy}]=${orderBy}`, {
               headers: {
                 'accept': 'application/ld+json',
               },
             });
             this.$patch(state => {
-              state.audiovisuals[order][page].push(response.data);
+              state.audiovisuals[search][sortBy][orderBy][page] = response.data['hydra:member'];
             });
-          });
+            if (!(search in this.lastPage)) {
+              this.lastPage[search] = {};
+            }
+            if (!(sortBy in this.lastPage[search])) {
+              this.lastPage[search][sortBy] = {};
+            }
+            if (response.data['hydra:view'] && response.data['hydra:view']['hydra:last']) {
+              const match = response.data['hydra:view']['hydra:last'].match(/page=(\d+)/);
+              if (match) {
+                this.lastPage[search][sortBy][orderBy] = parseInt(match[1], 10);
+              }
+            } else {
+              this.lastPage[search][sortBy][orderBy] = 1;
+            }
 
-          this.lastPageOrder = content['totalPages']
-
-          console.log(this.audiovisuals);
+            console.log(this.audiovisuals);
+          }
         } catch (error) {
-          notify({
-            type: "error",
-            text: "Error al ordenar por valoración",
-          });
           console.error('Error:', error);
         } finally {
           this.loading = false;
-        }
-      }
-    },
-    async getPeliculasByNombre(search, sortBy = null, orderBy = 'desc') {
-      if (!(search in this.audiovisuals)) {
-        this.$patch(state => {
-          state.audiovisuals[search] = {};
-        });
-        if (!(sortBy in this.audiovisuals[search])) {
-          this.$patch(state => {
-            state.audiovisuals[search][sortBy] = {};
-          });
-          if (!(orderBy in this.audiovisuals[search][sortBy])) {
-            this.$patch(state => {
-              state.audiovisuals[search][sortBy][orderBy] = {};
-            });
-            this.loading = true;
-            try {
-              const response = await axios.get(`http://localhost/api/audiovisuals?nombre=${search}&order[${sortBy}]=${orderBy}`, {
-                headers: {
-                  'accept': 'application/ld+json',
-                },
-              });
-              console.log(response.data);
-              this.$patch(state => {
-                state.audiovisuals[search][sortBy][orderBy] = response.data['hydra:member'];
-              });
-              console.log(this.audiovisuals);
-            } catch (error) {
-              notify({
-                type: "error",
-                text: "Error al buscar por nombre",
-              });
-              console.error('Error:', error);
-            } finally {
-              this.loading = false;
-            }
-          }
         }
       }
     },

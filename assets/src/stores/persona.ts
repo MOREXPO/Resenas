@@ -4,9 +4,9 @@ import axios from 'axios';
 export const personaStore = defineStore({
   id: "persona",
   state: () => ({
-    personas: { general: {} },
+    personas: {},
     store: [],
-    lastPage: 0,
+    lastPage: {},
     loading: true,
   }),
   getters: {
@@ -24,46 +24,47 @@ export const personaStore = defineStore({
     },
   },
   actions: {
-    async getApiPersonas(page) {
-      if (!(page in this.personas.general)) {
-        this.loading = true;
-        try {
-          const response = await axios.get(`http://localhost/api/personas?page=${page}`, {
-            headers: {
-              'accept': 'application/ld+json',
-            },
-          });
-          this.$patch(state => {
-            state.personas.general[page] = response.data['hydra:member'];
-          });
-          const match = response.data['hydra:view']['hydra:last'].match(/page=(\d+)/);
-          if (match) {
-            this.lastPage = parseInt(match[1], 10);
-          }
-          console.log(this.personas);
-          this.loading = false;
-        } catch (error) {
-          this.loading = false;
-          console.error('Error:', error);
-        }
-      }
-    },
-    async getPersonasByNombre(search) {
+    async getApiPersonas(page, search = '', sortBy = 'id', orderBy = 'desc') {
       if (!(search in this.personas)) {
-        this.$patch(state => {
-          state.personas[search] = {};
-        });
+        this.personas[search] = {};
+      }
+      if (!(sortBy in this.personas[search])) {
+        this.personas[search][sortBy] = {};
+      }
+      if (!(orderBy in this.personas[search][sortBy])) {
+        this.personas[search][sortBy][orderBy] = {};
+      }
+      if (!(page in this.personas[search][sortBy][orderBy])) {
         this.loading = true;
         try {
-          const response = await axios.get(`http://localhost/api/personas?nombre=${search}`, {
+          let response = null;
+          response = await axios.get(`http://localhost/api/personas?nombre=${search}&page=${page}&order[${sortBy}]=${orderBy}`, {
             headers: {
               'accept': 'application/ld+json',
             },
           });
-          console.log(response.data);
           this.$patch(state => {
-            state.personas[search] = response.data['hydra:member'];
+            state.personas[search][sortBy][orderBy][page] = response.data['hydra:member'];
           });
+          if (!(search in this.lastPage)) {
+            this.lastPage[search] = {};
+          }
+          if (!(sortBy in this.lastPage[search])) {
+            this.lastPage[search][sortBy] = {};
+          }
+          if (!(orderBy in this.lastPage[search][sortBy])) {
+            this.lastPage[search][sortBy][orderBy] = {};
+          }
+          if (!(page in this.lastPage[search][sortBy][orderBy])) {
+            if (response.data['hydra:view'] && response.data['hydra:view']['hydra:last']) {
+              const match = response.data['hydra:view']['hydra:last'].match(/page=(\d+)/);
+              if (match) {
+                this.lastPage[search][sortBy][orderBy] = parseInt(match[1], 10);
+              }
+            } else {
+              this.lastPage[search][sortBy][orderBy] = 1;
+            }
+          }
           console.log(this.personas);
         } catch (error) {
           console.error('Error:', error);

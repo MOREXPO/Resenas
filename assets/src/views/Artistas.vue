@@ -6,21 +6,28 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" md="6">
-        <v-text-field @keydown.enter="buscar" v-model="search" label="Buscar" outlined dense></v-text-field>
+      <v-col cols="12" md="4">
+        <v-text-field v-model="search" label="Buscar" outlined dense></v-text-field>
       </v-col>
-      <v-col cols="12" md="6">
+      <v-col cols="12" md="4">
         <v-select v-model="sortBy" item-title="text" item-value="value" :items="sortOptions" label="Ordenar por"
           outlined dense></v-select>
       </v-col>
+      <v-col cols="12" md="4">
+        <v-select v-model="orderBy" item-title="text" item-value="value" :items="orderOptions"
+          label="Criterio de ordenación" outlined dense></v-select>
+      </v-col>
     </v-row>
     <v-row v-if="!personasLoading" id="content">
-      <v-col v-for="artista in artistas" :key="artista.id" cols="3">
-        <ArtistaCard :artista="artista"></ArtistaCard>
-      </v-col>
-      <v-col v-if="search.trim().length === 0" :cols="12" class="text-center paginacion">
-        <v-pagination v-model="page" class="my-4" :total-visible="7" :length="lastPage" color="primary"></v-pagination>
-      </v-col>
+      <v-row style="direction: ltr;">
+        <v-col v-for="artista in artistas" :key="artista.id" cols="3">
+          <ArtistaCard :artista="artista"></ArtistaCard>
+        </v-col>
+        <v-col :cols="12" class="text-center paginacion">
+          <v-pagination v-model="page" class="my-4" :total-visible="7" :length="lastPage[search][sortBy][orderBy]"
+            color="primary"></v-pagination>
+        </v-col>
+      </v-row>
     </v-row>
     <v-row v-else>
       <v-col>
@@ -41,6 +48,7 @@ export default {
       page: 1,
       search: '',
       sortBy: 'id', // Criterio inicial de ordenamiento
+      orderBy: 'desc',
     }
   },
   components: {
@@ -53,51 +61,46 @@ export default {
       personasLoading: store => store.loading,
     }),
     artistas() {
-      if (this.search.trim().length === 0) {
-        return this.personas['general'] && this.personas['general'][this.page]
-          ? this.personas['general'][this.page]
-          : [];
-      } else {
-        return this.personas[this.search]
-          ? this.personas[this.search]
-          : [];
-      }
+      return this.personas[this.search][this.sortBy][this.orderBy][this.page]
+        ? this.personas[this.search][this.sortBy][this.orderBy][this.page]
+        : [];
     },
     sortOptions() {
       return [
         { text: 'ID', value: 'id' },
-        { text: 'Título', value: 'nombre' },
-        { text: 'Fecha de lanzamiento', value: 'fechaLanzamiento' },
-        { text: 'Duración', value: 'duracion' },
-        // Agrega más opciones de ordenamiento según tus necesidades
+        { text: 'Nombre', value: 'nombre' },
+        { text: 'Fecha de nacimiento', value: 'fechaNacimiento' },
+      ];
+    },
+    orderOptions() {
+      return [
+        { text: 'Ascendente', value: 'asc' },
+        { text: 'Descendente', value: 'desc' },
       ];
     },
   },
   methods: {
     ...mapActions(personaStore, ["getApiPersonas", "getPersonasByNombre"]),
-    buscar() {
-      if (this.search.trim().length !== 0) {
-        this.getPersonasByNombre(this.search);
-      } else {
-        this.getApiPersonas(this.page);
-      }
-    }
   },
   created() {
-    this.getApiPersonas(this.page);
+    this.getApiPersonas(this.page, this.search, this.sortBy, this.orderBy);
   },
   watch: {
     page(newValue, oldValue) {
-      this.page = newValue;
-      this.getApiPersonas(newValue);
+      this.getApiPersonas(newValue, this.search, this.sortBy, this.orderBy);
     },
     search(newValue) {
-      if (newValue.trim().length !== 0) {
-        this.getPersonasByNombre(newValue);
-      } else {
-        this.getApiPersonas(this.page);
-      }
-    }
+      this.page = 1;
+      this.getApiPersonas(this.page, newValue, this.sortBy, this.orderBy);
+    },
+    sortBy(newValue) {
+      this.page = 1;
+      this.getApiPersonas(this.page, this.search, newValue, this.orderBy);
+    },
+    orderBy(newValue) {
+      this.page = 1;
+      this.getApiPersonas(this.page, this.search, this.sortBy, newValue);
+    },
   }
 }
 </script>

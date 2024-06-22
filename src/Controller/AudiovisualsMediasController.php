@@ -18,7 +18,7 @@ class AudiovisualsMediasController extends AbstractController
     {
         $audiovisuals = $this->audiovisualRepository->findByAverageRating($page,30,$orderBy);
         return new JsonResponse([
-            "hydra:member" => $audiovisuals,
+            ...$audiovisuals,
         ]);
     }
 }
