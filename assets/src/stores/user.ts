@@ -7,7 +7,7 @@ const { notify } = useNotification()
 export const userStore = defineStore({
   id: "user",
   state: () => ({
-    loading: true,
+    loading: false,
     user: null,
     token: "",
   }),

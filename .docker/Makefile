@@ -54,3 +54,4 @@ cc: sf
 ## —— node 	———————————————————————————————————————————————————————————————
 client-dev: 
 	$(NODE_CONT) npm run dev -- --host
+deploy-dev: up client-dev
