@@ -25,6 +25,9 @@ up: ## Start the docker hub in detached mode (no logs)
 
 deploy_frontend: 
 	@$(DOCKER_COMP) exec node npm run build-only
+	
+deploy_backend: 
+	@$(DOCKER_COMP) exec php composer dump-env prod 
 
 down: ## Stop the docker hub
 	@$(DOCKER_COMP) down --remove-orphans
@@ -58,4 +61,4 @@ cc: sf
 client-dev: 
 	$(NODE_CONT) npm run dev -- --host
 deploy-dev: up client-dev
-deploy: up deploy_frontend
+deploy: up deploy_backend deploy_frontend
