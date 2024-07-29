@@ -1,39 +1,41 @@
 <template>
-  <div id="nav-bar">
-    <input id="nav-toggle" type="checkbox" />
-    <div id="nav-header">
-      <div id="nav-title">R<i class="mdi mdi-star"></i>SEÑAS</div>
-      <label for="nav-toggle"><span id="nav-toggle-burger"></span></label>
-      <hr />
-    </div>
-    <div id="nav-content">
+  <v-layout>
+    <v-app-bar class="text-white" style="background: var(--navbar-dark-primary)">
+      <v-app-bar-title>
+        <div id="nav-title"><i class="mdi mdi-star"></i></div>
+      </v-app-bar-title>
+
+      <v-spacer></v-spacer>
+
       <router-link to="/peliculas" class="nav-button">
         <i class="mdi mdi-film"></i><span>Peliculas</span>
       </router-link>
       <router-link to="/artistas" class="nav-button">
         <i class="mdi mdi-account-star"></i><span>Artistas</span>
       </router-link>
-      <div id="nav-content-highlight"></div>
-    </div>
-    <input id="nav-footer-toggle" type="checkbox" />
-    <div id="nav-footer">
-      <div id="nav-footer-heading">
-        <div id="nav-footer-avatar"><img
-            src="https://t3.ftcdn.net/jpg/05/53/79/60/360_F_553796090_XHrE6R9jwmBJUMo9HKl41hyHJ5gqt9oz.jpg" /></div>
-        <div id="nav-footer-titlebox" :class="user ? 'text-caption' : ''">{{ user ? user.email : 'Iniciar sesión'
-          }}<span id="nav-footer-subtitle">{{ user
-            && user.roles ? user.roles.join(', ') : '' }}</span></div>
-        <label for="nav-footer-toggle"><i class="mdi mdi-menu-up"></i></label>
-      </div>
-      <div id="nav-footer-content">
-        <router-link v-if="user" to="/peliculas/favoritas" class="nav-button">
-          Lista de favoritos
-        </router-link>
-        <a v-if="user" @click="logout" class="nav-button">Cerrar sesión</a>
-        <LoginForm v-else></LoginForm>
-      </div>
-    </div>
-  </div>
+      <router-link v-if="user" to="/peliculas/favoritas">
+        <v-btn icon>
+          <v-icon>mdi-heart</v-icon>
+        </v-btn>
+      </router-link>
+      <a v-if="user" @click="logout" class="nav-button">Cerrar sesión</a>
+      <v-btn v-else icon @click="showModal = true">
+        <v-icon>mdi-plus</v-icon>
+      </v-btn>
+    </v-app-bar>
+    <v-dialog v-model="showModal" max-width="600px">
+      <v-card>
+        <v-card-title class="headline">Login/Register</v-card-title>
+        <v-card-text>
+          <LoginForm></LoginForm>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="showModal = false">Cerrar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-layout>
 </template>
 <script>
 import { mapState, mapActions } from 'pinia';
@@ -41,9 +43,14 @@ import { userStore } from '../stores/user';
 import LoginForm from './LoginForm.vue';
 
 export default {
-  name: "navigationDrawer",
+  name: "navbar",
   components: {
     LoginForm
+  },
+  data() {
+    return {
+      showModal: false,
+    };
   },
   computed: {
     ...mapState(userStore, {
@@ -53,6 +60,11 @@ export default {
   },
   methods: {
     ...mapActions(userStore, ["logout"]),
+  },
+  watch: {
+    user(newValue) {
+      if (newValue) this.showModal = false;
+    }
   }
 }
 </script>
@@ -284,7 +296,7 @@ label[for=nav-toggle] {
 }
 
 .nav-button:nth-of-type(1):hover {
-  color: var(--navbar-dark-primary);
+  color: white;
 }
 
 .nav-button:nth-of-type(1):hover~#nav-content-highlight {
@@ -292,7 +304,7 @@ label[for=nav-toggle] {
 }
 
 .nav-button:nth-of-type(2):hover {
-  color: var(--navbar-dark-primary);
+  color: white;
 }
 
 .nav-button:nth-of-type(2):hover~#nav-content-highlight {

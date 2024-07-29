@@ -56,6 +56,16 @@ services:
             - ../assets/:/srv/app
         stdin_open: true
         tty: true
+    web:
+        image: nginx:latest # Usa la imagen oficial de Nginx
+        ports:
+            - "9894:80" # Mapea el puerto 80 del contenedor al puerto 80 local
+        volumes:
+            - ../assets/dist:/usr/share/nginx/html # Conecta el directorio local /dist al directorio de contenido de Nginx
+            - ./web/nginx.conf:/etc/nginx/conf.d/default.conf
+        restart: unless-stopped
+        depends_on:
+            - node
 
 volumes:
     symfony_app_var:

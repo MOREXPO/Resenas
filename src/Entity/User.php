@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Controller\addAudiovisualController;
+use App\Controller\AddAudiovisualController;
 use App\Controller\UserAuthController;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;

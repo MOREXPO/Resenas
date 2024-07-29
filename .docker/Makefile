@@ -23,6 +23,9 @@ help: ## Outputs this help screen
 up: ## Start the docker hub in detached mode (no logs)
 	@$(DOCKER_COMP) up --detach --wait
 
+deploy_frontend: 
+	@$(DOCKER_COMP) exec node npm run build-only
+
 down: ## Stop the docker hub
 	@$(DOCKER_COMP) down --remove-orphans
 
@@ -55,3 +58,4 @@ cc: sf
 client-dev: 
 	$(NODE_CONT) npm run dev -- --host
 deploy-dev: up client-dev
+deploy: up deploy_frontend

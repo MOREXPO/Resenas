@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Audiovisual;
 use App\Repository\AudiovisualRepository;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,7 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
-class addAudiovisualController extends AbstractController
+class AddAudiovisualController extends AbstractController
 {
     public function __construct(
         private UserRepository $userRepository,

@@ -33,7 +33,6 @@ import { mapState, mapActions } from 'pinia';
 import { audiovisualStore } from '../stores/audiovisual';
 import { userStore } from '../stores/user';
 import PeliculaCard from '../components/PeliculaCard.vue';
-import ButtonLike from '../components/ButtonLike.vue';
 
 export default {
     name: "PeliculasFav",
@@ -45,7 +44,6 @@ export default {
     },
     components: {
         PeliculaCard,
-        ButtonLike
     },
     computed: {
         ...mapState(audiovisualStore, {
