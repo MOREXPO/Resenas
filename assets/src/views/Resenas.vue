@@ -184,7 +184,7 @@ export default {
 
             this.pelicula.medio.resenas.forEach(resena => {
                 resena.valoraciones.forEach(valoracion => {
-                    let valoracionTransformada = (valoracion.calificacion + 1) * 2.5;
+                    let valoracionTransformada = ((valoracion.calificacion ? valoracion.calificacion : 0) + 1) * 2.5;
                     totalValoraciones += valoracionTransformada;
                     totalCalificaciones++;
                 });
